@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UD-Master</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; overflow-y: auto;
+      padding: 2.5rem 1.25rem 3rem;
+      background:
+        radial-gradient(ellipse 70% 60% at 80% 20%, #e8dfc855 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 20% 80%, #e05c2a18 0%, transparent 55%),
+        var(--paper);
+    }
+    .landing-logo {
+      width: 140px; height: 140px; object-fit: contain;
+      margin-bottom: 1rem;
+      animation: fadeDown .5s ease both;
+      filter: drop-shadow(0 4px 16px rgba(13,13,13,.18));
+    }
+    .landing-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--ink); color: var(--paper);
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      padding: .35rem .9rem; border-radius: 999px;
+      margin-bottom: 1.25rem;
+      animation: fadeDown .6s .05s ease both;
+    }
+    .landing-badge span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: inline-block; }
+    .landing-title {
+      font-size: clamp(1.8rem, 10vw, 6rem);
+      font-weight: 800; line-height: 1.05;
+      text-align: center; margin-bottom: 1rem;
+      animation: fadeDown .6s .1s ease both;
+      width: 100%; padding: 0 1rem; word-break: break-word;
+    }
+    .landing-title em { color: var(--accent); font-style: normal; }
+    .landing-sub {
+      color: var(--muted); font-size: .95rem; text-align: center;
+      max-width: 420px; line-height: 1.6; margin-bottom: 2.5rem;
+      animation: fadeDown .6s .2s ease both; padding: 0 .5rem;
+    }
+    .customer-card {
+      background: var(--white); border: 2px solid var(--border);
+      border-radius: var(--r); padding: 2rem 2.5rem;
+      cursor: pointer; transition: all .25s; text-align: center;
+      max-width: 300px; width: 100%;
+      position: relative; overflow: hidden;
+      animation: fadeDown .6s .3s ease both;
+    }
+    .customer-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 4px; background: var(--accent);
+      transform: scaleX(0); transition: transform .3s;
+    }
+    .customer-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: transparent; }
+    .customer-card:hover::after { transform: scaleX(1); }
+    .customer-card:active { transform: scale(0.98); }
+    .customer-card .role-icon { font-size: 2.8rem; margin-bottom: .75rem; display: block; }
+    .customer-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .4rem; }
+    .customer-card p  { font-size: .85rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ADMIN FLOAT BUTTON -->
+<button class="admin-float-btn" id="admin-float-btn" onclick="window.location.href='admin.html'" title="Admin" style="display:flex;">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+  </svg>
+</button>
+
+<img class="landing-logo" id="landing-logo" src="assets/Logo.png" alt="UD. Master Logo" />
+
+<div class="landing-badge"><span></span> Sistem Layanan Cetak Digital</div>
+
+<h1 class="landing-title">UD<em> Master</em></h1>
+
+<p class="landing-sub">Layanan cetak profesional UD. Master — cepat, mudah, dan paperless.</p>
+
+<div style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; width:100%; max-width:640px; margin-bottom: 2rem;">
+  <div class="customer-card" onclick="window.location.href='form1.html'">
+    <span class="role-icon" style="color:var(--accent);"><i class="fa-solid fa-file-invoice"></i></span>
+    <h3>Mulai Pesan</h3>
+    <p>Klik di sini &amp; pilih layanan cetak</p>
+  </div>
+  <div class="customer-card" onclick="window.location.href='cek_status.html'">
+    <span class="role-icon" style="color:var(--accent2);"><i class="fa-solid fa-magnifying-glass"></i></span>
+    <h3>Cek Status</h3>
+    <p>Periksa progres pesanan menggunakan No. Antrian</p>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+  // Set logo from shared constant
+  document.getElementById('landing-logo').src = 'assets/Logo.png';
+  // Bersihkan state lama kalau user mulai dari awal
+  clearState();
+</script>
+</body>
+</html>

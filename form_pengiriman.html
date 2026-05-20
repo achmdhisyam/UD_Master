@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pengiriman — UD_Master</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: radial-gradient(ellipse 60% 50% at 0% 0%, #e05c2a10 0%, transparent 55%), var(--paper); }
+    main { flex: 1; display: flex; flex-direction: column; animation: fadeUp .4s ease both; }
+  </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+<header class="form-header">
+  <div class="header-left">
+    <img class="header-logo" id="hdr-logo" src="assets/Logo.png" alt="" />
+    <div class="brand">UD<span>Master</span></div>
+  </div>
+  <div class="step-indicator">
+    <div class="step-dot active"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot"></div>
+  </div>
+</header>
+
+<div class="form-body">
+    <div class="form-section" id="step-3">
+      <p class="section-tag" id="step3-tag">Langkah 3 dari 4</p>
+      <h2 class="section-title">Pengiriman</h2>
+      <div class="field">
+        <label>Pilih Opsi Pengiriman *</label>
+        <div class="delivery-cards">
+          <label class="delivery-card">
+            <input type="radio" name="pengiriman" value="Ambil Sendiri" onchange="onDeliveryChange('Ambil Sendiri')" />
+            <span class="dc-icon" style="color:var(--accent2);"><i class="fa-solid fa-store"></i></span>
+            <div class="dc-name">Ambil Sendiri</div>
+            <div class="dc-sub">Langsung di toko</div>
+          </label>
+          <label class="delivery-card">
+            <input type="radio" name="pengiriman" value="Diantar (Ojek / Kurir)" onchange="onDeliveryChange('Diantar (Ojek / Kurir)')" />
+            <span class="dc-icon" style="color:var(--accent);"><i class="fa-solid fa-motorcycle"></i></span>
+            <div class="dc-name">Diantar</div>
+            <div class="dc-sub">Ojek / Kurir</div>
+          </label>
+        </div>
+      </div>
+      <div class="field" id="field-alamat" style="display:none;">
+        <label>Alamat Pengiriman *</label>
+        <textarea id="inp-alamat" placeholder="Masukkan alamat lengkap pengiriman..."></textarea>
+      </div>
+      <div class="form-nav">
+        <button class="btn-back" onclick="kembali()">← Kembali</button>
+        <button class="btn-next" onclick="lanjut()">Lanjut →</button>
+      </div>
+    </div>
+</div>
+    
+<script src="assets/shared.js"></script>
+<script>
+  document.getElementById('hdr-logo').src = 'assets/Logo.png';
+
+  const s = getState();
+  if (!s.layanan) window.location.href = 'form1.html';
+
+  const isPound = s.layanan === 'Pound (Potong)';
+  if (isPound) {
+    document.getElementById('step3-tag').textContent = 'Langkah 2 dari 3';
+  } else {
+    document.getElementById('step3-tag').textContent = 'Langkah 3 dari 4';
+  }
+  renderStepIndicator(isPound ? 2 : 3);
+
+  if (s.pengiriman) {
+    const r = document.querySelector(`input[name="pengiriman"][value="${s.pengiriman}"]`);
+    if (r) { r.checked = true; onDeliveryChange(s.pengiriman); }
+  }
+  if (s.alamat) {
+    document.getElementById('inp-alamat').value = s.alamat;
+  }
+
+  function onDeliveryChange(val) {
+    document.getElementById('field-alamat').style.display = (val === 'Diantar (Ojek / Kurir)') ? 'block' : 'none';
+  }
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.outline = '2px solid #ff6b6b'; el.style.borderRadius = '10px';
+    setTimeout(() => { el.style.outline = ''; }, 800);
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function kembali() {
+    if (isPound) {
+      window.location.href = 'form1.html';
+    } else {
+      window.location.href = 'form2.html';
+    }
+  }
+
+  function lanjut() {
+    const pengirimanEl = document.querySelector('input[name="pengiriman"]:checked');
+    if (!pengirimanEl) {
+      Swal.fire('Perhatian', 'Pilih opsi pengiriman terlebih dahulu.', 'warning');
+      shake('step-3'); 
+      return; 
+    }
+
+    const pengiriman = pengirimanEl.value;
+    const alamat = document.getElementById('inp-alamat').value.trim();
+
+    if (pengiriman === 'Diantar (Ojek / Kurir)' && !alamat) {
+      Swal.fire('Perhatian', 'Mohon isi alamat lengkap pengiriman.', 'warning');
+      shake('inp-alamat');
+      return;
+    }
+
+    setState({ pengiriman, alamat: (pengiriman === 'Diantar (Ojek / Kurir)') ? alamat : '' });
+    window.location.href = 'payment.html';
+  }
+</script>
+</body>
+</html>

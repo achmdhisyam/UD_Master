@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Identitas & Layanan — UD_Master</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: radial-gradient(ellipse 60% 50% at 0% 0%, #e05c2a10 0%, transparent 55%), var(--paper);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp .4s ease both;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="form-header">
+    <div class="header-left">
+      <img class="header-logo" id="hdr-logo" src="assets/Logo.png" alt="" />
+      <div class="brand">UD<span>Master</span></div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot"></div>
+    </div>
+  </header>
+
+  <main>
+    <form action="simpan.php" method="POST" enctype="multipart/form-data">
+      <div class="form-body">
+
+        <p class="section-tag">Langkah 1 dari 3</p>
+        <h2 class="section-title">Identitas &amp; Layanan</h2>
+
+        <!-- Nama -->
+        <div class="field">
+          <label>Atas Nama *</label>
+          <input type="text" name="nama" id="inp-nama" placeholder="Masukkan nama lengkap Anda" />
+        </div>
+        <div class="field">
+          <label>No. WhatsApp *</label>
+          <input type="tel" id="inp-wa" placeholder="Contoh: 08123456789"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+        </div>
+
+        <!-- Layanan -->
+        <div class="field">
+          <label>Jenis Layanan *</label>
+          <div class="service-cards" id="service-cards">
+            <label class="service-card">
+              <input type="radio" name="layanan" value="Offset (Cetak / Print)"
+                onchange="onLayananChange('Offset (Cetak / Print)')" />
+              <span class="svc-icon" style="color:var(--accent);"><i class="fa-solid fa-print"></i></span>
+              <span class="svc-name">Offset</span>
+              <span class="svc-sub">Cetak / Print massal</span>
+            </label>
+            <label class="service-card">
+              <input type="radio" name="layanan" value="Pound (Potong)" onchange="onLayananChange('Pound (Potong)')" />
+              <span class="svc-icon" style="color:var(--accent2);"><i class="fa-solid fa-scissors"></i></span>
+              <span class="svc-name">Pound</span>
+              <span class="svc-sub">Potong presisi</span>
+            </label>
+          </div>
+        </div>
+
+        <!----Penjelasan Harga-->
+        <div id="price-info-offset" class="price-info-box" style="display:none;">
+          <div class="pib-title"><i class="fa-solid fa-lightbulb"></i> Info Harga Offset</div>
+          <div class="pib-row"><span>Harga per lembar:</span><strong>Rp 65 / lembar</strong></div>
+          <div class="pib-row"><span>Rumus:</span><strong>Lembar × Warna × Rp 65</strong></div>
+          <div class="pib-row"><span>Minimum order:</span><strong>2.500 lembar</strong></div>
+          <div class="pib-row"><span>Harga minimum:</span><strong>Rp 600.000</strong></div>
+          <div class="pib-note"><i class="fa-solid fa-triangle-exclamation"></i> Pembelian di bawah 2.500 lembar tetap
+            dikenakan Rp 600.000. Di atas 2.500 lembar dihitung normal (lembar × warna × Rp 65).</div>
+        </div>
+        <div id="price-info-pound" class="price-info-box" style="display:none;">
+          <div class="pib-title"><i class="fa-solid fa-lightbulb"></i> Info Harga Pound <br></div>
+          <div class="pib-row"><span>Harga per lembar:</span><strong>Rp 80 / lembar</strong></div>
+          <div class="pib-row"><span>Rumus:</span><strong>Lembar × Rp 80</strong></div>
+          <div class="pib-row"><span>Minimum order:</span><strong>3.500 lembar</strong></div>
+          <div class="pib-row"><span>Harga minimum:</span><strong>Rp 250.000</strong></div>
+          <div class="pib-note"><i class="fa-solid fa-triangle-exclamation"></i> Pembelian di bawah 3.500 lembar tetap
+            dikenakan Rp 250.000. Di atas 3.500 lembar dihitung normal (lembar × Rp 80).</div>
+        </div>
+
+        <!-- Warna (hanya Offset) -->
+        <div class="field" id="field-warna" style="display:none;">
+          <label>Pilih Warna Cetak *</label>
+          <div class="color-checks">
+            <label class="color-check-item">
+              <input type="checkbox" name="warna[]" value="Cyan">
+              <span class="color-swatch" style="background:#00bcd4;"></span>
+              <span class="color-label">Cyan</span>
+            </label>
+            <label class="color-check-item">
+              <input type="checkbox" name="warna[]" value="Magenta">
+              <span class="color-swatch" style="background:#e91e63;"></span>
+              <span class="color-label">Magenta</span>
+            </label>
+            <label class="color-check-item">
+              <input type="checkbox" name="warna[]" value="Yellow">
+              <span class="color-swatch" style="background:#fdd835;"></span>
+              <span class="color-label">Yellow</span>
+            </label>
+            <label class="color-check-item">
+              <input type="checkbox" name="warna[]" value="Black">
+              <span class="color-swatch" style="background:#212121; border-color:#555;"></span>
+              <span class="color-label">Black</span>
+            </label>
+          </div>
+          <p class="qty-min-note">Harga: jumlah warna × lembar × Rp 65 (min. Rp 600.000)</p>
+        </div>
+
+        <!-- Upload (hanya Offset) -->
+        <div class="field" id="field-upload" style="display:none;">
+          <label>Upload File Dokumen *</label>
+          <div class="upload-area" id="upload-area" ondragover="event.preventDefault(); this.classList.add('dragover')"
+            ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
+            <input type="file" name="file[]" id="inp-file" multiple onchange="handleFileChange(event)">
+            <span class="upload-icon" style="color:var(--accent);"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+            <span class="upload-label">Ketuk untuk pilih file</span>
+            <span class="upload-hint">PDF, Word, Excel, PPT, JPG, PNG — maks. 20 MB</span>
+          </div>
+          <div id="file-list"></div>
+        </div>
+
+        <!-- Jumlah Lembar -->
+        <div class="field">
+          <label id="qty-label">Jumlah Lembar * <span id="qty-min-badge"
+              style="color:var(--accent);font-size:.75rem;"></span></label>
+          <div class="qty-control">
+          <input type="number" class="qty-input" id="qty-display" value="1" min="1" style="width:100%;text-align:center;" oninput="onQtyInput(this)" onblur="onQtyBlur(this)" />
+        </div>
+          <p class="qty-min-note" id="qty-note"></p>
+          <div class="qty-below-min-warn" id="qty-below-warn">
+            <i class="fa-solid fa-triangle-exclamation"></i> Quantity di bawah minimal order. Anda tetap akan dikenakan
+            biaya minimum sesuai tarif layanan.
+          </div>
+        </div>
+
+        <!-- Catatan -->
+        <div class="field">
+          <label>Catatan Tambahan</label>
+          <textarea name="catatan" id="inp-catatan" placeholder="Tambahkan catatan jika ada"></textarea>
+        </div>
+
+        <!-- Nav -->
+        <button type="button" class="btn-back" onclick="window.location.href='index.html'">← Kembali</button>
+        <button type="button" class="btn-next" onclick="lanjut()">Lanjut →</button>
+
+      </div>
+    </form>
+  </main>
+
+  <script src="assets/shared.js"></script>
+  <script>
+    // ── Logo ──
+    document.getElementById('hdr-logo');
+
+    // ── State ──
+    let qty = 1;
+    let uploadedFiles = [];
+
+    // Restore state jika ada
+    (function restoreState() {
+      const s = getState();
+      if (s.nama) document.getElementById('inp-nama').value = s.nama;
+      if (s.catatan) document.getElementById('inp-catatan').value = s.catatan;
+      if (s.qty) { qty = s.qty; document.getElementById('qty-display').value = qty; }
+      if (s.layanan) {
+        const radio = document.querySelector(`input[name="layanan"][value="${s.layanan}"]`);
+        if (radio) { radio.checked = true; onLayananChange(s.layanan); }
+      }
+      if (s.warna && Array.isArray(s.warna)) {
+        s.warna.forEach(v => {
+          const cb = document.querySelector(`input[name="warna[]"][value="${v}"]`);
+          if (cb) cb.checked = true;
+        });
+      }
+      if (s.fileNames && Array.isArray(s.fileNames)) {
+        // Tidak bisa restore file objek, hanya tampilkan nama
+        uploadedFiles = s.fileNames.map(n => ({ name: n, size: 0, _restored: true }));
+        renderFileList();
+      }
+      updateQtyNote();
+      renderStepIndicator(1);
+    })();
+
+    // ── Dot step-2 visibility ──
+    function syncDot2() {
+      const layanan = getSelectedLayanan();
+      document.getElementById('dot-2').style.display = (layanan === 'Pound (Potong)') ? 'none' : '';
+    }
+
+    function getMinQty() {
+      return 1;
+    }
+
+    function getSelectedLayanan() {
+      const el = document.querySelector('input[name="layanan"]:checked');
+      return el ? el.value : '';
+    }
+
+    function getSelectedWarna() {
+      return Array.from(document.querySelectorAll('input[name="warna[]"]:checked')).map(c => c.value);
+    }
+
+    function getMinQty() {
+      return 1;
+    }
+
+    function onLayananChange(layanan) {
+      const isOffset = layanan === 'Offset (Cetak / Print)';
+      document.getElementById('field-warna').style.display = isOffset ? 'block' : 'none';
+      document.getElementById('field-upload').style.display = isOffset ? 'block' : 'none';
+      document.getElementById('price-info-offset').style.display = isOffset ? 'block' : 'none';
+      document.getElementById('price-info-pound').style.display = !isOffset ? 'block' : 'none';
+      if (!isOffset) {
+        document.querySelectorAll('input[name="warna[]"]').forEach(c => c.checked = false);
+        uploadedFiles = []; renderFileList();
+      }
+      updateQtyNote();
+      setState({ layanan });
+      renderStepIndicator(1);
+    }
+
+    function updateQtyNote() {
+      const layanan = getSelectedLayanan();
+      const badgeEl = document.getElementById('qty-min-badge');
+      const noteEl = document.getElementById('qty-note');
+      if (layanan === 'Offset (Cetak / Print)') {
+        badgeEl.textContent = '';
+        noteEl.textContent = 'Harga: jumlah warna × lembar × Rp 65 (minimal ongkos Rp 600.000)';
+      } else if (layanan === 'Pound (Potong)') {
+        badgeEl.textContent = '';
+        noteEl.textContent = 'Harga: lembar × Rp 80';
+      } else {
+        badgeEl.textContent = '';
+        noteEl.textContent = '';
+      }
+    }
+
+    // ── QTY ──
+    function changeQty(d) {
+      qty = Math.max(getMinQty(), qty + d);
+      document.getElementById('qty-display').value = qty;
+    }
+    function onQtyInput(el) {
+      const v = parseInt(el.value, 10);
+      if (!isNaN(v) && v >= 1) qty = v;
+    }
+    function onQtyBlur(el) {
+      const min = getMinQty();
+      const v = parseInt(el.value, 10);
+      qty = (isNaN(v) || v < min) ? min : v;
+      el.value = qty;
+    }
+
+    // ── FILES ──
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'].includes(ext)) return '<i class="fa-solid fa-file-image"></i>';
+      if (ext === 'pdf') return '<i class="fa-solid fa-file-pdf"></i>';
+      if (['doc', 'docx'].includes(ext)) return '<i class="fa-solid fa-file-word"></i>';
+      if (['xls', 'xlsx'].includes(ext)) return '<i class="fa-solid fa-file-excel"></i>';
+      if (['ppt', 'pptx'].includes(ext)) return '<i class="fa-solid fa-file-powerpoint"></i>';
+      return '<i class="fa-solid fa-paperclip"></i>';
+    }
+    function formatSize(b) {
+      if (!b) return '';
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
+    }
+    function addFiles(list) {
+      Array.from(list).forEach(f => {
+        if (f.size > 20971520) { Swal.fire('Terlalu Besar', f.name + ' melebihi batas 20MB, dilewati.', 'warning'); return; }
+        if (!uploadedFiles.find(u => u.name === f.name && u.size === f.size)) uploadedFiles.push(f);
+      });
+      renderFileList();
+    }
+    function renderFileList() {
+      const el = document.getElementById('file-list');
+      el.innerHTML = uploadedFiles.map((f, i) => `
+      <div class="file-item">
+        <span class="file-item-icon">${getFileIcon(f.name)}</span>
+        <div class="file-item-info">
+          <div class="file-item-name">${f.name}</div>
+          <div class="file-item-size">${formatSize(f.size)}</div>
+        </div>
+        <button class="file-item-remove" onclick="removeFile(${i})">✕</button>
+      </div>`).join('');
+    }
+    function removeFile(i) { uploadedFiles.splice(i, 1); renderFileList(); }
+    function handleFileChange(e) { addFiles(e.target.files); e.target.value = ''; }
+    function handleDrop(e) { e.preventDefault(); document.getElementById('upload-area').classList.remove('dragover'); addFiles(e.dataTransfer.files); }
+
+    // ── SHAKE ──
+    function shake(id) {
+      const el = document.getElementById(id);
+      el.style.borderColor = '#ff6b6b';
+      setTimeout(() => { el.style.borderColor = ''; }, 800);
+      el.focus();
+    }
+
+    // ── VALIDASI & LANJUT ──
+    async function lanjut() {
+      const nama = document.getElementById('inp-nama').value.trim();
+      const wa = document.getElementById('inp-wa').value.trim();
+      const layanan = getSelectedLayanan();
+      const warna = getSelectedWarna();
+
+      if (!nama) {
+        Swal.fire('Perhatian', 'Mohon isi nama Anda terlebih dahulu.', 'warning');
+        return shake('inp-nama');
+      }
+
+      if (!wa) {
+        Swal.fire('Perhatian', 'Mohon isi No. WhatsApp Anda terlebih dahulu.', 'warning');
+        return shake('inp-wa');
+      }
+
+      if (!layanan) {
+        Swal.fire('Perhatian', 'Silakan pilih jenis layanan (Cetak atau Potong).', 'warning');
+        const first = document.querySelector('.service-cards');
+        first.style.outline = '2px solid #ff6b6b'; first.style.borderRadius = '12px';
+        setTimeout(() => { first.style.outline = ''; }, 800);
+        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      if (layanan === 'Offset (Cetak / Print)') {
+        if (warna.length === 0) {
+          Swal.fire('Perhatian', 'Pilih minimal satu warna cetak.', 'warning');
+          const w = document.getElementById('field-warna');
+          w.style.outline = '2px solid #ff6b6b'; w.style.borderRadius = '10px';
+          setTimeout(() => { w.style.outline = ''; }, 800);
+          w.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        if (uploadedFiles.filter(f => !f._restored).length === 0 && uploadedFiles.length === 0) {
+          Swal.fire('Perhatian', 'Silakan unggah file desain Anda.', 'warning');
+          const a = document.getElementById('upload-area');
+          a.style.borderColor = '#ff6b6b'; a.style.background = '#fff5f5';
+          setTimeout(() => { a.style.borderColor = ''; a.style.background = ''; }, 1000);
+          a.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+      }
+
+      // Allow any quantity, price logic in shared.js handles minimums
+      if (qty < 1) { qty = 1; document.getElementById('qty-display').value = 1; shake('qty-display'); return; }
+
+      let serverFiles = [];
+      const btn = document.querySelector('.btn-next');
+      const oriText = btn.textContent;
+
+      if (layanan === 'Offset (Cetak / Print)' && uploadedFiles.length > 0) {
+        const newFiles = uploadedFiles.filter(f => !f._restored);
+        if (newFiles.length > 0) {
+          btn.textContent = 'Mengunggah...';
+          btn.disabled = true;
+
+          const fd = new FormData();
+          newFiles.forEach(f => fd.append('file[]', f));
+
+          try {
+            const res = await fetch('api/upload_temp.php', { method: 'POST', body: fd });
+            const json = await res.json();
+            if (json.success) {
+              serverFiles = json.files;
+            } else {
+              Swal.fire('Gagal', 'Gagal mengunggah file.', 'error');
+              btn.textContent = oriText;
+              btn.disabled = false;
+              return;
+            }
+          } catch (e) {
+            Swal.fire('Error', 'Terjadi kesalahan saat mengunggah.', 'error');
+            btn.textContent = oriText;
+            btn.disabled = false;
+            return;
+          }
+          btn.textContent = oriText;
+          btn.disabled = false;
+        }
+      }
+
+      const s = getState();
+      // Simpan state
+      setState({
+        nama,
+        wa,
+        layanan,
+        warna,
+        qty,
+        catatan: document.getElementById('inp-catatan').value.trim(),
+        fileNames: uploadedFiles.map(f => f.name),
+        serverFiles: serverFiles.length > 0 ? serverFiles : (s.serverFiles || [])
+      });
+
+      // Navigasi
+      if (layanan === 'Pound (Potong)') {
+        window.location.href = 'form_pengiriman.html';
+      } else {
+        window.location.href = 'form2.html';
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pembayaran — UD. Master</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, #1a9e5c0d 0%, transparent 55%), var(--paper);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp .4s ease both;
+    }
+
+    /* ── SUCCESS OVERLAY PREMIUM ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      /* Dark solid background for overlay */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+      z-index: 100;
+      color: var(--paper);
+      overflow-y: auto;
+    }
+
+    .success-overlay.show {
+      display: flex;
+      animation: fadeIn .4s ease;
+    }
+
+    .success-card {
+      background: #151515;
+      border: 1px solid #2a2a2a;
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: pop-in .5s cubic-bezier(.17, .67, .3, 1.5) both;
+    }
+
+    .success-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success), #126e40);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1.5rem;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(26, 158, 92, .4);
+    }
+
+    .success-number {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: transparent;
+      background: linear-gradient(135deg, var(--accent), #f08c62);
+      -webkit-background-clip: text;
+      background-clip: text;
+      margin: .2rem 0 .8rem;
+      line-height: 1;
+    }
+
+    .success-label {
+      font-size: .75rem;
+      color: rgba(245, 240, 232, .5);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .success-overlay h2 {
+      font-size: 1.6rem;
+      margin: 1rem 0 .5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .success-overlay p {
+      color: rgba(245, 240, 232, .6);
+      max-width: 320px;
+      line-height: 1.5;
+      font-size: .95rem;
+      margin-bottom: 2rem;
+    }
+
+    /* TIMELINE */
+    .success-status-card {
+      background: rgba(0, 0, 0, .3);
+      border-radius: 16px;
+      width: 100%;
+      padding: 1.5rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(245, 240, 232, .05);
+    }
+
+    .success-status-card h4 {
+      margin: 0 0 1.2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .status-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      position: relative;
+    }
+
+    .status-timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: rgba(245, 240, 232, .08);
+    }
+
+    .status-step {
+      display: flex;
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+      opacity: .4;
+    }
+
+    .status-step.active-step {
+      opacity: 1;
+    }
+
+    .status-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--ink);
+      border: 2px solid rgba(245, 240, 232, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .status-dot.done {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .status-dot.current {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      animation: pulse-shadow 2s infinite;
+    }
+
+    .status-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .s-name {
+      font-size: .95rem;
+      font-weight: 700;
+      color: #f5f0e8;
+    }
+
+    .s-sub {
+      font-size: .75rem;
+      color: rgba(245, 240, 232, .5);
+      margin-top: .2rem;
+    }
+
+    .s-sub.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* WA BOX */
+    .success-wa-box {
+      background: rgba(42, 110, 224, 0.08);
+      border: 1px solid rgba(42, 110, 224, 0.25);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .success-wa-box h4 {
+      color: #5c93e6;
+      margin: 0 0 .5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+    }
+
+    .success-wa-box p {
+      font-size: .85rem;
+      margin-bottom: 1.2rem;
+      color: rgba(245, 240, 232, .6);
+      line-height: 1.5;
+    }
+
+    .wa-btn-big {
+      display: inline-block;
+      background: #2a6ee0;
+      color: #fff;
+      text-decoration: none;
+      padding: .8rem 1.5rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: .9rem;
+      transition: all .2s;
+      box-shadow: 0 8px 20px rgba(42, 110, 224, .3);
+    }
+
+    .wa-btn-big:hover {
+      background: #1f5bc0;
+      transform: translateY(-2px);
+    }
+
+    .btn-home {
+      background: transparent;
+      color: var(--paper);
+      border: 1px solid rgba(245, 240, 232, .2);
+      border-radius: 999px;
+      padding: .8rem 2.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-home:hover {
+      background: rgba(245, 240, 232, .1);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse-shadow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(224, 92, 42, .4);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(224, 92, 42, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(224, 92, 42, 0);
+      }
+    }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      #success-page,
+      #success-page * {
+        visibility: visible;
+      }
+
+      #success-page {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        display: block !important;
+      }
+
+      .success-wa-box,
+      .btn-group-home {
+        display: none !important;
+      }
+    }
+
+    .su-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+
+    .su-details-table td {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .su-details-table td.key {
+      color: rgba(245, 240, 232, 0.5);
+      font-weight: 500;
+    }
+
+    .su-details-table td.val {
+      text-align: right;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    @media print {
+      .su-details-table td {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .su-details-table td.key {
+        color: #555;
+      }
+
+      .su-details-table td.val {
+        color: #000;
+      }
+
+      #su-res-nama {
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="form-header">
+    <div class="header-left">
+      <img class="header-logo" id="hdr-logo" src="" alt="UD. Master" />
+      <div class="brand">UD<span>Master</span></div>
+    </div>
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done" id="dot-2"></div>
+      <div class="step-dot active"></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="form-body" id="checkout-form-body">
+
+      <p class="section-tag">Langkah 3 dari 3</p>
+      <h2 class="section-title">Pembayaran</h2>
+
+      <!-- STEP 4: Pembayaran -->
+      <div class="form-section" id="step-4">
+
+        <div class="field">
+          <label>Metode Pembayaran *</label>
+          <div class="pay-options">
+            <label class="pay-pill">
+              <input type="radio" name="payment" value="Cash" onchange="toggleQRIS(false); buildSummary();" />
+              <span class="pill-icon" style="color:var(--success);"><i class="fa-solid fa-money-bill-wave"></i></span>
+              <div class="pill-label">Cash</div>
+              <div class="pill-sub">Bayar langsung</div>
+            </label>
+            <label class="pay-pill">
+              <input type="radio" name="payment" value="QRIS" onchange="toggleQRIS(true); buildSummary();" />
+              <span class="pill-icon" style="color:var(--accent2);"><i class="fa-solid fa-qrcode"></i></span>
+              <div class="pill-label">QRIS</div>
+              <div class="pill-sub">Scan &amp; bayar</div>
+            </label>
+          </div>
+        </div>
+
+        <div class="qris-box" id="qris-box">
+          <p
+            style="font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:.8rem;">
+            Scan QRIS untuk Membayar</p>
+          <div id="qris-container"
+            style="margin:1rem auto; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:160px;">
+            <div style="font-size:0.8rem; color:var(--muted);">Memuat QRIS...</div>
+          </div>
+
+        </div>
+
+        <div class="summary-card" id="summary-card">
+          <p
+            style="font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:rgba(245,240,232,.4); margin-bottom:1rem;">
+            Ringkasan Pesanan</p>
+          <div class="summary-row"><span class="key">Nama</span><span class="val" id="s-nama">—</span></div>
+          <div class="summary-row"><span class="key">WhatsApp</span><span class="val" id="s-wa">—</span></div>
+          <div class="summary-row" id="s-row-file"><span class="key">File</span><span class="val" id="s-file">—</span>
+          </div>
+          <div class="summary-row"><span class="key">Layanan</span><span class="val" id="s-layanan">—</span></div>
+          <div class="summary-row" id="s-row-warna" style="display:none;"><span class="key">Warna</span><span
+              class="val" id="s-warna">—</span></div>
+          <div class="summary-row"><span class="key">Jml Lembar</span><span class="val" id="s-qty">—</span></div>
+          <div class="summary-row" id="s-row-kertas"><span class="key">Jenis Kertas</span><span class="val"
+              id="s-kertas">—</span></div>
+          <div class="summary-row" id="s-row-ukuran"><span class="key">Ukuran</span><span class="val"
+              id="s-ukuran">—</span></div>
+          <div class="summary-row"><span class="key">Pengiriman</span><span class="val" id="s-pengiriman">—</span></div>
+          <div class="summary-row" id="s-row-alamat" style="display:none;"><span class="key">Alamat</span><span
+              class="val" id="s-alamat">—</span></div>
+          <div class="summary-row"><span class="key">Catatan</span><span class="val" id="s-catatan">—</span></div>
+          <div class="summary-row"><span class="key">Pembayaran</span><span class="val" id="s-bayar">—</span></div>
+          <div class="summary-total"><span>Estimasi Total</span><span class="price" id="s-total">—</span></div>
+          <div class="below-min-note" id="below-min-note">
+            <i class="fa-solid fa-triangle-exclamation"></i> Quantity di bawah minimal order, harga yang ditagihkan
+            adalah <strong id="min-price-text">—</strong> (biaya minimum berlaku).
+          </div>
+        </div>
+
+        <div class="form-nav">
+          <button class="btn-back" onclick="goBack()">← Kembali</button>
+          <button class="btn-next" onclick="submitOrder()" style="background:var(--success)"><i
+              class="fa-solid fa-check"></i> Konfirmasi Pesanan</button>
+        </div>
+      </div>
+
+    </div>
+    </div>
+
+    <!-- SUCCESS PAGE (Replaces checkout-form-body, styled like Cek Status premium card) -->
+    <div class="form-body" id="success-page" style="display: none; animation: fadeUp .4s ease both;">
+      <div
+        style="background: var(--white); border: 2px solid var(--border); border-radius: var(--r); padding: 2.5rem 1.5rem; width: 100%; box-shadow: var(--shadow); position: relative;">
+
+        <!-- Header Success Status -->
+        <div
+          style="display:flex; align-items:center; gap:1.25rem; margin-bottom:1.5rem; width:100%; border-bottom:2px solid var(--border); padding-bottom:1.25rem;">
+          <div class="success-ring"
+            style="width: 55px; height: 55px; font-size: 1.8rem; margin: 0; flex-shrink:0; background: linear-gradient(135deg, var(--success), #126e40); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; box-shadow: 0 10px 30px rgba(26,158,92,.4);">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div style="text-align:left;">
+            <h2 style="margin:0; font-size:1.45rem; font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink);">Pesanan Berhasil!
+            </h2>
+            <p style="margin:0; color:var(--muted); font-size:0.85rem;">Pesanan Anda telah tercatat dan siap diproses.
+            </p>
+          </div>
+        </div>
+
+        <!-- Antrian & Pelanggan Header -->
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem; width:100%;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Nomor Antrian
+            </div>
+            <h3 style="font-size:1.8rem; font-weight:800; color:var(--accent); margin:0;" id="su-res-antrian">#001</h3>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Pelanggan
+            </div>
+            <div style="font-size:1.1rem; font-weight:700; color:var(--ink);" id="su-res-nama">—</div>
+          </div>
+        </div>
+
+        <!-- TRACKING STATUS (TIMELINE) -->
+        <div class="success-status-card"
+          style="width:100%; margin-bottom:1.5rem; background: var(--ink); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(245,240,232,.05);">
+          <h4 style="margin: 0 0 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; color: #fff;"><i
+              class="fa-solid fa-box-open"></i> Status Progres Pesanan</h4>
+          <div class="status-timeline">
+            <!-- Step 1 -->
+            <div class="status-step active-step" id="su-step-1"
+              style="display: flex; gap: 1rem; position: relative; z-index: 1;">
+              <div class="status-dot done"
+                style="width: 30px; height: 30px; border-radius: 50%; background: var(--success); border: 2px solid var(--success); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: bold; flex-shrink: 0; color: #fff;">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <div class="status-info">
+                <div class="s-name" style="font-size: .95rem; font-weight: 700; color: #f5f0e8;">Pesanan Diterima</div>
+                <div class="s-sub" id="su-st-time-1" style="font-size: .75rem; color: var(--accent); font-weight: 600;">
+                  <i class="fa-solid fa-circle-check"></i> Diterima
+                </div>
+              </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="status-step active-step" id="su-step-2"
+              style="display: flex; gap: 1rem; position: relative; z-index: 1;">
+              <div class="status-dot current"
+                style="width: 30px; height: 30px; border-radius: 50%; background: var(--accent); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: bold; flex-shrink: 0; color: #fff; animation: pulse-shadow 2s infinite;">
+                <i class="fa-solid fa-hourglass-half fa-spin"></i>
+              </div>
+              <div class="status-info">
+                <div class="s-name" style="font-size: .95rem; font-weight: 700; color: #f5f0e8;">Menunggu Diproses</div>
+                <div class="s-sub" id="su-st-time-2"
+                  style="font-size: .75rem; color: rgba(245,240,232,.5); margin-top: .2rem;">Operator akan segera
+                  memproses</div>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="status-step" id="su-step-3"
+              style="display: flex; gap: 1rem; position: relative; z-index: 1; opacity:0.3;">
+              <div class="status-dot"
+                style="width: 30px; height: 30px; border-radius: 50%; background: #222; border: 2px solid rgba(245,240,232,.2); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: bold; flex-shrink: 0; color: rgba(245,240,232,0.4);">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </div>
+              <div class="status-info">
+                <div class="s-name" style="font-size: .95rem; font-weight: 700; color: #f5f0e8;">Sedang Diproses</div>
+                <div class="s-sub" style="font-size: .75rem; color: rgba(245,240,232,.5); margin-top: .2rem;">File
+                  sedang dicetak/dipotong</div>
+              </div>
+            </div>
+            <!-- Step 4 -->
+            <div class="status-step" id="su-step-4"
+              style="display: flex; gap: 1rem; position: relative; z-index: 1; opacity:0.3;">
+              <div class="status-dot"
+                style="width: 30px; height: 30px; border-radius: 50%; background: #222; border: 2px solid rgba(245,240,232,.2); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: bold; flex-shrink: 0; color: rgba(245,240,232,0.4);">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <div class="status-info">
+                <div class="s-name" style="font-size: .95rem; font-weight: 700; color: #f5f0e8;">Selesai</div>
+                <div class="s-sub" style="font-size: .75rem; color: rgba(245,240,232,.5); margin-top: .2rem;">Siap
+                  diambil / dikirim</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAIL PESANAN TABLE -->
+        <div style="margin-top:1.5rem; width:100%;">
+          <h4
+            style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.05rem; border-bottom:2px solid var(--border); padding-bottom:0.5rem; margin-bottom:0.5rem; color:var(--ink);">
+            Detail Pesanan</h4>
+          <table class="su-details-table" style="width:100%; border-collapse:collapse;">
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Layanan</td>
+              <td class="val" id="su-res-layanan"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr id="su-row-detail-kertas">
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Detail Layanan</td>
+              <td class="val" id="su-res-details"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Jumlah</td>
+              <td class="val" id="su-res-jumlah"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Pengiriman</td>
+              <td class="val" id="su-res-pengiriman"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr id="su-row-alamat" style="display:none;">
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Alamat</td>
+              <td class="val" id="su-res-alamat"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Metode Bayar</td>
+              <td class="val" id="su-res-bayar"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border);">
+                Total Tagihan</td>
+              <td class="val" id="su-res-total"
+                style="text-align: right; font-weight: 700; color: var(--success); font-size: 1.1rem; border-bottom: 1px solid var(--border);">
+                —</td>
+            </tr>
+            <tr>
+              <td class="key" style="color: var(--muted); font-weight: 500; border-bottom: none;">Catatan</td>
+              <td class="val" id="su-res-catatan"
+                style="text-align: right; font-weight: 700; color: var(--ink); border-bottom: none;">—</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- KONFIRMASI WA -->
+        <div class="success-wa-box" id="success-wa-box" style="width:100%; text-align:center; margin-top:2rem;">
+          <h4 style="color: var(--ink); margin-bottom: 0.5rem;"><i class="fa-brands fa-whatsapp"
+              style="color:#25d366;"></i> Konfirmasi Pemesanan</h4>
+          <p style="margin: 0 auto 1.5rem; max-width: 100%; color: var(--muted);">Kirim bukti pemesanan atau bukti
+            transfer Anda ke WhatsApp admin kami untuk konfirmasi secara instan.</p>
+          <a class="wa-btn-big" id="wa-confirm-link" href="https://wa.me/6281234567890" target="_blank"
+            style="display:block; width:100%;">
+            <i class="fa-brands fa-whatsapp"></i> Konfirmasi ke Admin
+          </a>
+        </div>
+
+        <div class="btn-group-home"
+          style="display:flex; gap:1rem; margin-top:2rem; width:100%; justify-content:center;">
+          <button class="btn-home" onclick="downloadReceipt()" id="btn-print"
+            style="background:#2a6ee0; border-color:#2a6ee0; color:#fff; flex:1;"><i class="fa-solid fa-download"></i>
+            Unduh Bukti</button>
+          <button class="btn-home" onclick="resetAndGoHome()"
+            style="flex:1; border-color: var(--border); color: var(--ink);">← Beranda</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+
+  <script src="assets/shared.js"></script>
+  <script>
+    // Fetch Config (WA & QRIS)
+    let globalWaNumber = '6281234567890';
+    let globalQrisString = '';
+    let globalQrisImage = '';
+
+    fetch('api/settings.php')
+      .then(r => r.json())
+      .then(res => {
+        if (res.success && res.data) {
+          if (res.data.wa_number) {
+            globalWaNumber = res.data.wa_number;
+            const waLinks = [document.getElementById('wa-confirm-link'), document.getElementById('btn-wa-qris')];
+            waLinks.forEach(el => { if (el) el.href = 'https://wa.me/' + globalWaNumber; });
+            const txt = document.getElementById('txt-wa-qris');
+            if (txt) txt.textContent = globalWaNumber;
+          }
+          globalQrisString = res.data.qris_string || '';
+          globalQrisImage = res.data.qris_image || '';
+
+          renderQRIS();
+        }
+      })
+      .catch(e => console.error('Failed fetching settings:', e));
+
+    document.getElementById('hdr-logo').src = 'assets/Logo.png';
+
+    // ── Guard & load state ──
+    const s = getState();
+    if (!s.layanan) { window.location.href = 'form1.html'; }
+
+    const isPound = s.layanan === 'Pound (Potong)';
+
+    // Dynamic step indicator and section tag
+    document.querySelector('.section-tag').textContent = isPound ? 'Langkah 3 dari 3' : 'Langkah 4 dari 4';
+    renderStepIndicator(isPound ? 3 : 4);
+
+    // Tombol kembali — arahkan ke form_pengiriman
+    function goBack() {
+      window.location.href = 'form_pengiriman.html';
+    }
+
+    // ── Isi ringkasan ──
+    function buildSummary() {
+      document.getElementById('s-nama').textContent = s.nama || '—';
+      document.getElementById('s-wa').textContent = s.wa || '—';
+      document.getElementById('s-layanan').textContent = s.layanan || '—';
+      document.getElementById('s-qty').textContent = (s.qty || 0).toLocaleString('id-ID') + ' lembar';
+      document.getElementById('s-catatan').textContent = s.catatan || '—';
+
+      // Pengiriman & Alamat
+      document.getElementById('s-pengiriman').textContent = s.pengiriman || '—';
+      if (s.pengiriman === 'Diantar / Dikirim') {
+        document.getElementById('s-row-alamat').style.display = 'flex';
+        document.getElementById('s-alamat').textContent = s.alamat || '—';
+      } else {
+        document.getElementById('s-row-alamat').style.display = 'none';
+      }
+
+      // Pembayaran
+      const bayarEl = document.querySelector('input[name="payment"]:checked');
+      document.getElementById('s-bayar').textContent = bayarEl ? bayarEl.value : '—';
+
+      // File (hanya Offset)
+      if (!isPound && s.fileNames && s.fileNames.length > 0) {
+        document.getElementById('s-file').textContent = s.fileNames.length + ' file (' + s.fileNames.join(', ') + ')';
+        document.getElementById('s-row-file').style.display = 'flex';
+      } else {
+        document.getElementById('s-row-file').style.display = 'none';
+      }
+
+      // Kertas & ukuran (hanya Offset)
+      document.getElementById('s-row-kertas').style.display = isPound ? 'none' : 'flex';
+      document.getElementById('s-row-ukuran').style.display = isPound ? 'none' : 'flex';
+      document.getElementById('s-kertas').textContent = s.kertas || '—';
+      document.getElementById('s-ukuran').textContent = s.ukuran || '—';
+
+      // Warna (hanya Offset)
+      if (!isPound && s.warna && s.warna.length > 0) {
+        document.getElementById('s-row-warna').style.display = 'flex';
+        document.getElementById('s-warna').textContent = s.warna.join(', ') + ' (' + s.warna.length + ' warna)';
+      } else {
+        document.getElementById('s-row-warna').style.display = 'none';
+      }
+
+      // Harga
+      const harga = calcPrice(s.layanan, s.qty || 0, s.warna || []);
+      document.getElementById('s-total').textContent = formatRp(harga);
+    }
+
+    buildSummary();
+
+    // ── QRIS toggle ──
+    function toggleQRIS(showQRIS) {
+      document.getElementById('qris-box').classList.toggle('show', showQRIS);
+    }
+
+    // ── Submit ──
+    function submitOrder() {
+      const bayarEl = document.querySelector('input[name="payment"]:checked');
+      if (!bayarEl) {
+        Swal.fire('Perhatian', 'Pilih metode pembayaran terlebih dahulu!', 'warning');
+        const payOpts = document.querySelector('.pay-options');
+        payOpts.style.outline = '2px solid #ff6b6b'; payOpts.style.borderRadius = '12px';
+        setTimeout(() => { payOpts.style.outline = ''; }, 800);
+        payOpts.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      const harga = calcPrice(s.layanan, s.qty || 0, s.warna || []);
+      const payload = {
+        ...s,
+        bayar: bayarEl.value,
+        harga,
+        waktu: new Date().toISOString(),
+      };
+
+      // ── KIRIM KE PHP ──
+      const btn = document.querySelector('.btn-next');
+      const oriText = btn.textContent;
+      btn.textContent = 'Memproses...';
+      btn.disabled = true;
+
+      fetch('api/simpan_pesanan.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (res.success) {
+            buildWaLink(res.antrian, bayarEl.value, harga);
+            showSuccess(res.antrian);
+          } else {
+            Swal.fire('Gagal', 'Gagal: ' + (res.message || 'Unknown error'), 'error');
+            btn.textContent = oriText;
+            btn.disabled = false;
+          }
+        })
+        .catch(() => {
+          Swal.fire('Error', 'Gagal mengirim pesanan. Coba lagi.', 'error');
+          btn.textContent = oriText;
+          btn.disabled = false;
+        });
+    }
+
+    // ── QRIS Parser & CCITT CRC-16 Generator ──
+    function parseQRIS(qris) {
+      const tags = {};
+      let i = 0;
+      while (i < qris.length) {
+        const id = qris.substring(i, i + 2);
+        const len = parseInt(qris.substring(i + 2, i + 4), 10);
+        const val = qris.substring(i + 4, i + 4 + len);
+        tags[id] = val;
+        i += 4 + len;
+      }
+      return tags;
+    }
+
+    function buildQRIS(tags, amount) {
+      tags['01'] = '12'; // dynamic status
+      tags['54'] = amount.toString(); // set transaction amount
+
+      let qris = '';
+      const ids = Object.keys(tags).sort();
+      ids.forEach(id => {
+        if (id === '63') return;
+        const val = tags[id];
+        const len = val.length.toString().padStart(2, '0');
+        qris += id + len + val;
+      });
+      qris += '6304';
+      const crc = calculateCRC16(qris);
+      qris += crc;
+      return qris;
+    }
+
+    function calculateCRC16(str) {
+      let crc = 0xFFFF;
+      for (let c = 0; c < str.length; c++) {
+        crc ^= str.charCodeAt(c) << 8;
+        for (let i = 0; i < 8; i++) {
+          if (crc & 0x8000) {
+            crc = (crc << 1) ^ 0x1021;
+          } else {
+            crc = crc << 1;
+          }
+        }
+      }
+      crc &= 0xFFFF;
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function renderQRIS() {
+      const container = document.getElementById('qris-container');
+      if (!container) return;
+
+      container.innerHTML = ''; // clear loading
+
+      const harga = calcPrice(s.layanan, s.qty || 0, s.warna || []);
+
+      if (globalQrisString) {
+        try {
+          const parsed = parseQRIS(globalQrisString);
+          const dynamicQRIS = buildQRIS(parsed, harga);
+
+          const qrDiv = document.createElement('div');
+          qrDiv.style.margin = '0.5rem auto';
+          qrDiv.style.padding = '12px';
+          qrDiv.style.background = 'white';
+          qrDiv.style.borderRadius = '12px';
+          qrDiv.style.display = 'inline-block';
+          container.appendChild(qrDiv);
+
+          new QRCode(qrDiv, {
+            text: dynamicQRIS,
+            width: 160,
+            height: 160,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+
+          const tip = document.createElement('p');
+          tip.style.fontSize = '0.8rem';
+          tip.style.color = '#1a9e5c';
+          tip.style.fontWeight = 'bold';
+          tip.style.marginTop = '0.8rem';
+          tip.style.textAlign = 'center';
+          tip.innerHTML = '✨ Nominal Otomatis: <strong>' + formatRp(harga) + '</strong>';
+          container.appendChild(tip);
+          return;
+        } catch (err) {
+          console.error('QRIS Dynamic generator failed, falling back to static:', err);
+        }
+      }
+
+      if (globalQrisImage) {
+        const img = document.createElement('img');
+        img.src = globalQrisImage;
+        img.style.maxWidth = '160px';
+        img.style.borderRadius = '12px';
+        img.style.border = '1px solid rgba(255,255,255,0.1)';
+        container.appendChild(img);
+
+        const tip = document.createElement('p');
+        tip.style.fontSize = '0.8rem';
+        tip.style.color = 'var(--muted)';
+        tip.style.marginTop = '0.6rem';
+        tip.style.textAlign = 'center';
+        tip.textContent = 'ℹ️ Scan & Masukkan Nominal secara manual';
+        container.appendChild(tip);
+      } else {
+        container.innerHTML = '<div style="font-size:0.8rem; color:var(--muted); text-align:center;">QRIS Toko belum dikonfigurasi admin</div>';
+      }
+    }
+
+    // ── Prefill WA Chat with Order details ──
+    function buildWaLink(antrian, bayarMetode, totalHarga) {
+      const formattedHarga = formatRp(totalHarga);
+      const antrianText = '#' + String(antrian).padStart(3, '0');
+      let detailWarna = '';
+      if (s.layanan === 'Offset (Cetak / Print)') {
+        detailWarna = `\n- Warna: ${s.warna && s.warna.length ? s.warna.join(', ') : '—'}`;
+        detailWarna += `\n- Kertas: ${s.kertas || '—'}`;
+        detailWarna += `\n- Ukuran: ${s.ukuran || '—'}`;
+      }
+      let detailAlamat = '';
+      if (s.pengiriman === 'Diantar / Dikirim') {
+        detailAlamat = `\n- Alamat: ${s.alamat || '—'}`;
+      }
+
+      const text = `Halo Admin UD. Master, saya ingin mengonfirmasi pembayaran pesanan saya.
+
+📋 *DETAIL PESANAN*
+- Nomor Antrian: *${antrianText}*
+- Nama Pelanggan: ${s.nama || '—'}
+- Layanan: ${s.layanan || '—'}
+- Jumlah: ${(s.qty || 0).toLocaleString('id-ID')} lembar${detailWarna}
+- Pengiriman: ${s.pengiriman || '—'}${detailAlamat}
+- Metode Pembayaran: *${bayarMetode}*
+- Total Tagihan: *${formattedHarga}*
+- Catatan: ${s.catatan || '—'}
+
+[Saya akan melampirkan foto struk/bukti transfer jika menggunakan QRIS]`;
+
+      const url = 'https://wa.me/' + globalWaNumber + '?text=' + encodeURIComponent(text);
+      const confirmBtn = document.getElementById('wa-confirm-link');
+      if (confirmBtn) confirmBtn.href = url;
+    }
+
+    function showSuccess(antrian) {
+      // Populate customer details in success card
+      document.getElementById('su-res-antrian').textContent = '#' + String(antrian).padStart(3, '0');
+      document.getElementById('su-res-nama').textContent = s.nama || '—';
+      document.getElementById('su-res-layanan').textContent = s.layanan || '—';
+      document.getElementById('su-res-jumlah').textContent = (s.qty || 0).toLocaleString('id-ID') + ' lembar';
+      document.getElementById('su-res-pengiriman').textContent = s.pengiriman || '—';
+
+      const bayarEl = document.querySelector('input[name="payment"]:checked');
+      document.getElementById('su-res-bayar').textContent = bayarEl ? bayarEl.value : '—';
+
+      const harga = calcPrice(s.layanan, s.qty || 0, s.warna || []);
+      document.getElementById('su-res-total').textContent = formatRp(harga);
+      document.getElementById('su-res-catatan').textContent = s.catatan || '—';
+
+      const isPound = s.layanan === 'Pound (Potong)';
+      if (!isPound) {
+        document.getElementById('su-row-detail-kertas').style.display = 'table-row';
+        document.getElementById('su-res-details').innerHTML = `Warna: ${s.warna && s.warna.length ? s.warna.join(', ') : '-'}<br>Kertas: ${s.kertas || '-'}<br>Ukuran: ${s.ukuran || '-'}`;
+      } else {
+        document.getElementById('su-row-detail-kertas').style.display = 'none';
+      }
+
+      if (s.pengiriman === 'Diantar (Ojek / Kurir)') {
+        document.getElementById('su-row-alamat').style.display = 'table-row';
+        document.getElementById('su-res-alamat').textContent = s.alamat || '—';
+      } else {
+        document.getElementById('su-row-alamat').style.display = 'none';
+      }
+
+      // Hide checkout form-body, show success-page inside main flow
+      document.getElementById('checkout-form-body').style.display = 'none';
+      document.getElementById('success-page').style.display = 'block';
+
+      // Scroll smoothly to top to show success page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      clearState();
+    }
+
+    function downloadReceipt() {
+      const antrianNum = document.getElementById('su-res-antrian').textContent.replace('#', '').trim();
+
+      /* ── Build a self-contained receipt clone ── */
+      const clone = document.createElement('div');
+      clone.style.cssText = [
+        'position:fixed', 'left:-9999px', 'top:0',
+        'width:420px', 'background:#ffffff',
+        'padding:28px 28px 32px', 'box-sizing:border-box',
+        'font-family:"Plus Jakarta Sans",sans-serif', 'color:#1a1a1a',
+        'border-radius:0', 'box-shadow:none'
+      ].join(';');
+
+      /* Logo + title header */
+      clone.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:16px;border-bottom:2px solid #e5e0d5;">
+          <img src="assets/Logo.png" style="height:44px;width:44px;object-fit:contain;" crossorigin="anonymous"/>
+          <div>
+            <div style="font-size:1.2rem;font-weight:800;font-family:'Plus Jakarta Sans',sans-serif;color:#1a1a1a;">UD<span style="color:#e05c2a;">Master</span></div>
+            <div style="font-size:0.7rem;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.05em;">Bukti Pesanan</div>
+          </div>
+          <div style="margin-left:auto;text-align:right;">
+            <div style="font-size:0.65rem;color:#888;text-transform:uppercase;font-weight:700;">Antrian</div>
+            <div style="font-size:1.7rem;font-weight:900;color:#e05c2a;line-height:1;">#${antrianNum}</div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #e5e0d5;">
+          <div>
+            <div style="font-size:0.65rem;text-transform:uppercase;color:#888;font-weight:700;">Pelanggan</div>
+            <div style="font-size:1rem;font-weight:700;color:#1a1a1a;">${document.getElementById('su-res-nama').textContent}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.65rem;text-transform:uppercase;color:#888;font-weight:700;">Tanggal</div>
+            <div style="font-size:0.85rem;font-weight:600;color:#1a1a1a;">${new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</div>
+          </div>
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+          ${(()=>{
+            const alamatRow = document.getElementById('su-row-alamat');
+            const showAlamat = alamatRow && alamatRow.style.display !== 'none';
+            const rows = [
+              ['Layanan',      document.getElementById('su-res-layanan').textContent],
+              ['Detail',       document.getElementById('su-res-details').textContent],
+              ['Jumlah',       document.getElementById('su-res-jumlah').textContent],
+              ['Pengiriman',   document.getElementById('su-res-pengiriman').textContent],
+            ];
+            if (showAlamat) {
+              rows.push(['Alamat', document.getElementById('su-res-alamat').textContent]);
+            }
+            rows.push(['Metode Bayar', document.getElementById('su-res-bayar').textContent]);
+            rows.push(['Catatan',      document.getElementById('su-res-catatan').textContent]);
+            return rows.map(([k,v]) => `
+              <tr>
+                <td style="padding:7px 0;font-size:0.8rem;color:#666;font-weight:500;border-bottom:1px solid #f0ebe0;width:40%;">${k}</td>
+                <td style="padding:7px 0;font-size:0.85rem;font-weight:700;color:#1a1a1a;text-align:right;border-bottom:1px solid #f0ebe0;">${v}</td>
+              </tr>`).join('');
+          })()}
+          <tr>
+            <td style="padding:10px 0 4px;font-size:0.85rem;color:#666;font-weight:600;">Total Tagihan</td>
+            <td style="padding:10px 0 4px;font-size:1.15rem;font-weight:900;color:#1a9e5c;text-align:right;">${document.getElementById('su-res-total').textContent}</td>
+          </tr>
+        </table>
+
+        <div style="background:#fff8f0;border:1.5px solid #e05c2a22;border-radius:10px;padding:12px 14px;margin-top:4px;">
+          <div style="font-size:0.7rem;color:#e05c2a;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Status Pesanan</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="width:8px;height:8px;border-radius:50%;background:#1a9e5c;flex-shrink:0;"></span>
+            <span style="font-size:0.82rem;font-weight:700;color:#1a9e5c;">Pesanan Diterima – Menunggu Diproses</span>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;padding-top:14px;border-top:2px dashed #e5e0d5;text-align:center;font-size:0.68rem;color:#aaa;">
+          Simpan bukti ini sebagai referensi. Hubungi admin via WhatsApp untuk konfirmasi.<br/>
+          <strong style="color:#1a1a1a;">UD Master</strong> — Terima kasih atas kepercayaan Anda.
+        </div>
+      `;
+
+      document.body.appendChild(clone);
+
+      html2canvas(clone, {
+        scale: 2.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: 420,
+        windowWidth: 420
+      }).then(canvas => {
+        document.body.removeChild(clone);
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'BuktiPesanan_UD_Master_' + antrianNum + '.png';
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }, 'image/png');
+      }).catch(err => {
+        document.body.removeChild(clone);
+        console.error('Unduh gambar gagal:', err);
+        window.print();
+      });
+    }
+
+    function resetAndGoHome() {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+
+</html>

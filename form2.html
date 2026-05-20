@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kertas & Ukuran — UD. Master</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { display: flex; flex-direction: column; min-height: 100vh; background: radial-gradient(ellipse 60% 50% at 100% 100%, #2a6ee010 0%, transparent 55%), var(--paper); }
+    main { flex: 1; display: flex; flex-direction: column; animation: fadeUp .4s ease both; }
+
+    /* Paper option cards */
+    .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: .3rem; }
+    .paper-card {
+      background: var(--white); border: 2px solid var(--border);
+      border-radius: 12px; padding: 1rem .85rem;
+      cursor: pointer; transition: all .2s;
+      position: relative; user-select: none; text-align: left;
+    }
+    .paper-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .paper-card .p-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 700; display: block; margin-bottom: .2rem; }
+    .paper-card .p-sub  { font-size: .73rem; color: var(--muted); line-height: 1.4; }
+    .paper-card:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 4px rgba(224,92,42,.10); }
+    .paper-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .paper-card:active { transform: scale(0.97); }
+    .paper-check {
+      position: absolute; top: .6rem; right: .6rem;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); display: none;
+      align-items: center; justify-content: center;
+      font-size: .65rem; color: #fff;
+    }
+    .paper-card:has(input:checked) .paper-check { display: flex; }
+
+    /* Size option chips */
+    .size-chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .size-chip {
+      background: var(--white); border: 2px solid var(--border);
+      border-radius: 8px; padding: .55rem 1rem;
+      cursor: pointer; transition: all .2s;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .85rem; font-weight: 700;
+      position: relative; user-select: none;
+    }
+    .size-chip input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .size-chip:has(input:checked) { border-color: var(--accent); background: #fff5f2; color: var(--accent); box-shadow: 0 0 0 3px rgba(224,92,42,.10); }
+    .size-chip:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .size-chip:active { transform: scale(0.97); }
+
+    .size-sub { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .72rem; color: var(--muted); font-weight: 400; display: block; margin-top: .15rem; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="form-header">
+  <div class="header-left">
+    <img class="header-logo" id="hdr-logo" src="" alt="UD. Master" />
+    <div class="brand">UD<span>Master</span></div>
+  </div>
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot active"></div>
+    <div class="step-dot"></div>
+  </div>
+</header>
+
+<main>
+<div class="form-body">
+
+  <p class="section-tag">Langkah 2 dari 3</p>
+  <h2 class="section-title">Kertas &amp; Ukuran</h2>
+
+  <!-- Jenis Kertas -->
+  <div class="field">
+    <label>Jenis Kertas *</label>
+    <div class="paper-grid" id="paper-grid">
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="HVS 70gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">HVS 70 gsm</span>
+        <span class="p-sub">Standar, ringan</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="HVS 80gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">HVS 80 gsm</span>
+        <span class="p-sub">Tebal, kokoh</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Ivory 210gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Ivory 210 gsm</span>
+        <span class="p-sub">Kartu, premium</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Art Paper 120gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Art Paper 120 gsm</span>
+        <span class="p-sub">Warna vivid</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Art Paper 150gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Art Paper 150 gsm</span>
+        <span class="p-sub">Brosur premium</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Art Carton 260gsm" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Art Carton 260 gsm</span>
+        <span class="p-sub">Cover tebal</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Glossy Photo" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Foto Glossy</span>
+        <span class="p-sub">Kilap, foto</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Matte Photo" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Foto Matte</span>
+        <span class="p-sub">Doff, anti-glare</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Sticker Vinyl" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Sticker Vinyl</span>
+        <span class="p-sub">Tahan air</span>
+      </label>
+
+      <label class="paper-card">
+        <input type="radio" name="kertas" value="Sticker Chromo" />
+        <span class="paper-check"><i class="fa-solid fa-check"></i></span>
+        <span class="p-name">Sticker Chromo</span>
+        <span class="p-sub">Indoor, glossy</span>
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Ukuran Kertas -->
+  <div class="field">
+    <label>Ukuran Kertas *</label>
+    <div class="size-chips" id="size-chips">
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="A3 (297×420 mm)" />
+        A3<span class="size-sub">297 × 420 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="A4 (210×297 mm)" />
+        A4<span class="size-sub">210 × 297 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="A5 (148×210 mm)" />
+        A5<span class="size-sub">148 × 210 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="A6 (105×148 mm)" />
+        A6<span class="size-sub">105 × 148 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="Folio / F4 (215×330 mm)" />
+        Folio / F4<span class="size-sub">215 × 330 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="Legal (215×356 mm)" />
+        Legal<span class="size-sub">215 × 356 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="Letter (216×279 mm)" />
+        Letter<span class="size-sub">216 × 279 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="B5 (176×250 mm)" />
+        B5<span class="size-sub">176 × 250 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="10R Foto (254×305 mm)" />
+        10R Foto<span class="size-sub">254 × 305 mm</span>
+      </label>
+
+      <label class="size-chip">
+        <input type="radio" name="ukuran" value="4R Foto (102×152 mm)" />
+        4R Foto<span class="size-sub">102 × 152 mm</span>
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="form-nav">
+    <button class="btn-back" onclick="window.location.href='form1.html'">← Kembali</button>
+    <button class="btn-next" onclick="lanjut()">Lanjut →</button>
+  </div>
+
+</div>
+</main>
+
+<script src="assets/shared.js"></script>
+<script>
+  document.getElementById('hdr-logo').src = 'assets/Logo.png';
+
+  // Guard — kalau tidak ada state form1, kembali
+  (function guard() {
+    const s = getState();
+    if (!s.layanan) window.location.href = 'form1.html';
+    // Restore pilihan sebelumnya
+    if (s.kertas) {
+      const r = document.querySelector(`input[name="kertas"][value="${s.kertas}"]`);
+      if (r) r.checked = true;
+    }
+    if (s.ukuran) {
+      const r = document.querySelector(`input[name="ukuran"][value="${s.ukuran}"]`);
+      if (r) r.checked = true;
+    }
+    renderStepIndicator(2);
+  })();
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.outline = '2px solid #ff6b6b'; el.style.borderRadius = '10px';
+    setTimeout(() => { el.style.outline = ''; }, 800);
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function lanjut() {
+    const kertasEl = document.querySelector('input[name="kertas"]:checked');
+    const ukuranEl = document.querySelector('input[name="ukuran"]:checked');
+
+    if (!kertasEl) {
+      Swal.fire('Perhatian', 'Pilih jenis kertas terlebih dahulu.', 'warning');
+      shake('paper-grid'); 
+      return; 
+    }
+    if (!ukuranEl) {
+      Swal.fire('Perhatian', 'Pilih ukuran kertas terlebih dahulu.', 'warning');
+      shake('size-chips'); 
+      return; 
+    }
+
+    setState({ kertas: kertasEl.value, ukuran: ukuranEl.value });
+    window.location.href = 'form_pengiriman.html';
+  }
+</script>
+</body>
+</html>

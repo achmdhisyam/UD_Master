@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cek Status Pesanan — UD. Master</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      display: flex; flex-direction: column; min-height: 100vh;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, #e05c2a0c 0%, transparent 55%), var(--paper);
+    }
+    main { flex: 1; display: flex; flex-direction: column; animation: fadeUp .4s ease both; }
+    
+    .status-card-premium {
+      background: var(--white); border: 2px solid var(--border);
+      border-radius: var(--r); padding: 2rem 1.5rem; width: 100%;
+      margin-top: 1.5rem; display: none;
+      animation: fadeUp .3s ease both;
+    }
+
+    /* ── SUCCESS STATUS CARD (TIMELINE) ── */
+    .success-status-card {
+      background: var(--ink); border-radius: 16px; width: 100%;
+      padding: 1.5rem; text-align: left; margin-bottom: 1.5rem;
+      border: 1px solid rgba(245,240,232,.05);
+    }
+    .success-status-card h4 { margin: 0 0 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; color: #fff; }
+    .status-timeline { display: flex; flex-direction: column; gap: 1.2rem; position: relative; }
+    .status-timeline::before {
+      content: ''; position: absolute; left: 14px; top: 10px; bottom: 10px;
+      width: 2px; background: rgba(245,240,232,.08);
+    }
+    .status-step { display: flex; gap: 1rem; position: relative; z-index: 1; opacity: .3; transition: opacity .3s; }
+    .status-step.active-step { opacity: 1; }
+    .status-dot {
+      width: 30px; height: 30px; border-radius: 50%; background: #222;
+      border: 2px solid rgba(245,240,232,.2); display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: bold; flex-shrink: 0; color: rgba(245,240,232,0.4);
+    }
+    .status-dot.done { background: var(--success); border-color: var(--success); color: #fff; }
+    .status-dot.current { background: var(--accent); border-color: var(--accent); color: #fff; animation: pulse-shadow 2s infinite; }
+    .status-info { display: flex; flex-direction: column; justify-content: center; }
+    .s-name { font-size: .95rem; font-weight: 700; color: #f5f0e8; }
+    .s-sub { font-size: .75rem; color: rgba(245,240,232,.5); margin-top: .2rem; }
+    .s-sub.active { color: var(--accent); font-weight: 600; }
+
+    @keyframes pulse-shadow {
+      0% { box-shadow: 0 0 0 0 rgba(224,92,42,.4); }
+      70% { box-shadow: 0 0 0 10px rgba(224,92,42,0); }
+      100% { box-shadow: 0 0 0 0 rgba(224,92,42,0); }
+    }
+
+    .info-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    .info-table td { padding: 0.75rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table td.key { color: var(--muted); font-weight: 500; }
+    .info-table td.val { text-align: right; font-weight: 700; color: var(--ink); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="form-header">
+    <div class="header-left">
+      <img class="header-logo" src="assets/Logo.png" alt="UD. Master Logo" id="hdr-logo" />
+      <div class="brand" style="cursor:pointer;" onclick="window.location.href='index.html'">UD<span>Master</span></div>
+    </div>
+    <div style="color:var(--paper); font-size:0.85rem; font-weight:600; cursor:pointer;" onclick="window.location.href='index.html'">
+      ← Beranda
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <main>
+    <div class="form-body">
+      <div class="section-tag">Pelacakan Antrian</div>
+      <h2 class="section-title">Cek Status Pesanan</h2>
+
+      <div style="background:var(--white); border:2px solid var(--border); border-radius:var(--r); padding:1.5rem; width:100%;">
+        <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem; line-height:1.5;">
+          Masukkan nomor antrian yang Anda dapatkan setelah melakukan pemesanan (terdapat pada struk atau bukti pemesanan Anda).
+        </p>
+        
+        <div class="field" style="margin-bottom:1rem;">
+          <label for="inp-antrian">Nomor Antrian (ID Pesanan)</label>
+          <input type="number" id="inp-antrian" placeholder="Contoh: 15" style="-webkit-appearance: none; margin:0;" onkeydown="if(event.key==='Enter') checkStatus()">
+        </div>
+
+        <button onclick="checkStatus()" id="btn-search" class="btn-next" style="width:100%; border-radius:10px; margin-top:0.5rem; display:block;">
+          <i class="fa-solid fa-magnifying-glass"></i> Periksa Progres
+        </button>
+      </div>
+
+      <!-- STATUS CARD RESULT -->
+      <div class="status-card-premium" id="status-result">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--border); padding-bottom:1rem; margin-bottom:1.5rem;">
+          <div>
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Nomor Antrian</div>
+            <h3 style="font-size:1.8rem; font-weight:800; color:var(--accent);" id="res-antrian">#015</h3>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Pelanggan</div>
+            <div style="font-size:1.1rem; font-weight:700; color:var(--ink);" id="res-nama">Hikmal</div>
+          </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="success-status-card">
+          <h4><i class="fa-solid fa-box-open"></i> Status Progres Pesanan</h4>
+          <div class="status-timeline">
+            <!-- Step 1 -->
+            <div class="status-step" id="step-1">
+              <div class="status-dot" id="dot-1"><i class="fa-solid fa-check"></i></div>
+              <div class="status-info">
+                <div class="s-name">Pesanan Diterima</div>
+                <div class="s-sub" id="st-time-1">—</div>
+              </div>
+            </div>
+            <!-- Step 2 -->
+            <div class="status-step" id="step-2">
+              <div class="status-dot" id="dot-2"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div class="status-info">
+                <div class="s-name">Menunggu Diproses</div>
+                <div class="s-sub" id="st-time-2">Operator akan segera memproses</div>
+              </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="status-step" id="step-3">
+              <div class="status-dot" id="dot-3"><i class="fa-solid fa-arrows-rotate"></i></div>
+              <div class="status-info">
+                <div class="s-name">Sedang Diproses</div>
+                <div class="s-sub" id="st-time-3">File sedang dicetak/dipotong</div>
+              </div>
+            </div>
+            <!-- Step 4 -->
+            <div class="status-step" id="step-4">
+              <div class="status-dot" id="dot-4"><i class="fa-solid fa-circle-check"></i></div>
+              <div class="status-info">
+                <div class="s-name">Selesai</div>
+                <div class="s-sub" id="st-time-4">Siap diambil / dikirim</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILS -->
+        <div style="margin-top:1.5rem;">
+          <h4 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1rem; border-bottom:2px solid var(--border); padding-bottom:0.5rem; margin-bottom:0.5rem;">Detail Pesanan</h4>
+          <table class="info-table">
+            <tr>
+              <td class="key">Layanan</td>
+              <td class="val" id="res-layanan">Offset (Cetak / Print)</td>
+            </tr>
+            <tr id="row-detail-kertas">
+              <td class="key">Detail Layanan</td>
+              <td class="val" id="res-details">—</td>
+            </tr>
+            <tr>
+              <td class="key">Jumlah</td>
+              <td class="val" id="res-jumlah">100 lembar</td>
+            </tr>
+            <tr>
+              <td class="key">Pengiriman</td>
+              <td class="val" id="res-pengiriman">Diambil Sendiri</td>
+            </tr>
+            <tr id="row-alamat" style="display:none;">
+              <td class="key">Alamat</td>
+              <td class="val" id="res-alamat">—</td>
+            </tr>
+            <tr>
+              <td class="key">Metode Bayar</td>
+              <td class="val" id="res-bayar">QRIS</td>
+            </tr>
+            <tr>
+              <td class="key">Total Tagihan</td>
+              <td class="val" id="res-total" style="color:var(--success); font-size:1.05rem;">Rp 150.000</td>
+            </tr>
+            <tr>
+              <td class="key">Catatan</td>
+              <td class="val" id="res-catatan">—</td>
+            </tr>
+          </table>
+        </div>
+
+        <button class="btn-back" onclick="window.location.href='index.html'" style="width:100%; border-radius:10px; margin-top:2rem; padding:0.9rem; border-color:var(--ink);">
+          Kembali ke Beranda
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="assets/shared.js"></script>
+  <script>
+    function formatRp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+
+    async function checkStatus() {
+      const antrianInput = document.getElementById('inp-antrian');
+      const antrian = antrianInput.value.trim();
+      
+      if (!antrian) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Harap masukkan nomor antrian Anda!',
+          confirmButtonColor: 'var(--accent)'
+        });
+        return;
+      }
+
+      const btn = document.getElementById('btn-search');
+      const oriHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-hourglass-half fa-spin"></i> Memeriksa...';
+
+      try {
+        const res = await fetch(`api/get_status.php?antrian=${antrian}`);
+        const json = await res.json();
+        
+        btn.disabled = false;
+        btn.innerHTML = oriHtml;
+
+        if (!json.success) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Tidak Ditemukan',
+            text: json.message || 'Pesanan tidak ditemukan.',
+            confirmButtonColor: 'var(--accent)'
+          });
+          document.getElementById('status-result').style.display = 'none';
+          return;
+        }
+
+        const o = json.data;
+        
+        // Populate customer details
+        document.getElementById('res-antrian').textContent = '#' + String(o.id).padStart(3, '0');
+        document.getElementById('res-nama').textContent = o.nama;
+        document.getElementById('res-layanan').textContent = o.layanan;
+        document.getElementById('res-jumlah').textContent = Number(o.jumlah).toLocaleString('id-ID') + ' lembar';
+        document.getElementById('res-pengiriman').textContent = o.pengiriman;
+        document.getElementById('res-bayar').textContent = o.bayar;
+        document.getElementById('res-total').textContent = formatRp(o.harga);
+        document.getElementById('res-catatan').textContent = o.catatan || '—';
+
+        if(o.layanan.includes('Offset')) {
+          document.getElementById('row-detail-kertas').style.display = 'table-row';
+          document.getElementById('res-details').innerHTML = `Warna: ${o.warna || '-'}<br>Kertas: ${o.kertas || '-'}<br>Ukuran: ${o.ukuran || '-'}`;
+        } else {
+          document.getElementById('row-detail-kertas').style.display = 'none';
+        }
+
+        if(o.pengiriman.includes('Diantar')) {
+          document.getElementById('row-alamat').style.display = 'table-row';
+          document.getElementById('res-alamat').textContent = o.alamat || '—';
+        } else {
+          document.getElementById('row-alamat').style.display = 'none';
+        }
+
+        // Handle timeline status rendering
+        // Reset steps
+        const steps = ['step-1', 'step-2', 'step-3', 'step-4'];
+        const dots = ['dot-1', 'dot-2', 'dot-3', 'dot-4'];
+        
+        steps.forEach(s => document.getElementById(s).classList.remove('active-step'));
+        dots.forEach(d => {
+          const dot = document.getElementById(d);
+          dot.className = 'status-dot';
+          dot.innerHTML = '';
+        });
+
+        document.getElementById('dot-1').innerHTML = '<i class="fa-solid fa-check"></i>';
+        document.getElementById('dot-2').innerHTML = '<i class="fa-solid fa-hourglass-half"></i>';
+        document.getElementById('dot-3').innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+        document.getElementById('dot-4').innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+
+        // Map database status
+        // status options: menunggu, diproses, selesai
+        const status = o.status || 'menunggu';
+
+        if (status === 'menunggu') {
+          // Step 1: Diterima (Done)
+          document.getElementById('step-1').classList.add('active-step');
+          document.getElementById('dot-1').classList.add('done');
+          document.getElementById('st-time-1').innerHTML = '<i class="fa-solid fa-circle-check"></i> Diterima';
+
+          // Step 2: Menunggu (Current)
+          document.getElementById('step-2').classList.add('active-step');
+          document.getElementById('dot-2').classList.add('current');
+        } else if (status === 'diproses') {
+          // Step 1: Diterima (Done)
+          document.getElementById('step-1').classList.add('active-step');
+          document.getElementById('dot-1').classList.add('done');
+          document.getElementById('st-time-1').innerHTML = '<i class="fa-solid fa-circle-check"></i> Diterima';
+
+          // Step 2: Menunggu (Done)
+          document.getElementById('step-2').classList.add('active-step');
+          document.getElementById('dot-2').classList.add('done');
+          document.getElementById('dot-2').innerHTML = '<i class="fa-solid fa-check"></i>';
+
+          // Step 3: Diproses (Current)
+          document.getElementById('step-3').classList.add('active-step');
+          document.getElementById('dot-3').classList.add('current');
+          document.getElementById('dot-3').innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin"></i>';
+        } else if (status === 'selesai') {
+          // Step 1: Diterima (Done)
+          document.getElementById('step-1').classList.add('active-step');
+          document.getElementById('dot-1').classList.add('done');
+          document.getElementById('st-time-1').innerHTML = '<i class="fa-solid fa-circle-check"></i> Diterima';
+
+          // Step 2: Menunggu (Done)
+          document.getElementById('step-2').classList.add('active-step');
+          document.getElementById('dot-2').classList.add('done');
+          document.getElementById('dot-2').innerHTML = '<i class="fa-solid fa-check"></i>';
+
+          // Step 3: Diproses (Done)
+          document.getElementById('step-3').classList.add('active-step');
+          document.getElementById('dot-3').classList.add('done');
+          document.getElementById('dot-3').innerHTML = '<i class="fa-solid fa-check"></i>';
+
+          // Step 4: Selesai (Done)
+          document.getElementById('step-4').classList.add('active-step');
+          document.getElementById('dot-4').classList.add('done');
+          document.getElementById('dot-4').innerHTML = '<i class="fa-solid fa-check"></i>';
+        }
+
+        // Show result box
+        document.getElementById('status-result').style.display = 'block';
+        document.getElementById('status-result').scrollIntoView({ behavior: 'smooth' });
+
+      } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = oriHtml;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Terjadi kesalahan sistem saat memeriksa status.',
+          confirmButtonColor: 'var(--accent)'
+        });
+      }
+    }
+  </script>
+</body>
+</html>

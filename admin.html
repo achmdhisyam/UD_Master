@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — UD_Master</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/shared.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0d0d0d; color: #f5f0e8; margin: 0; min-height: 100vh; }
+    h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    .screen { display: none; flex-direction: column; min-height: 100vh; }
+    .screen.active { display: flex; }
+    
+    /* LOGIN */
+    #screen-admin-login { align-items: center; justify-content: center; padding: 2rem; }
+    .admin-login-box {
+      background: rgba(245,240,232,.05); border: 1px solid rgba(245,240,232,.12);
+      border-radius: 16px; padding: 2rem 1.5rem; width: 100%; max-width: 380px; text-align: center;
+    }
+    .admin-field { margin-bottom: 1.2rem; text-align: left; }
+    .admin-field label { display: block; font-size: .78rem; font-weight: 500; color: rgba(245,240,232,.5); margin-bottom: .45rem; letter-spacing: .05em; }
+    .admin-field input {
+      width: 100%; background: rgba(245,240,232,.08); border: 2px solid rgba(245,240,232,.15);
+      border-radius: 10px; padding: .85rem 1rem; color: #f5f0e8; outline: none; box-sizing: border-box;
+    }
+    .btn-admin-login {
+      width: 100%; background: #2a6ee0; color: #ffffff;
+      border: none; border-radius: 999px; padding: .9rem; margin-top: .5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer;
+    }
+    .login-err { color: #ff6b6b; font-size: .82rem; margin-top: .8rem; display: none; }
+    
+    /* DASHBOARD */
+    .admin-topbar {
+      padding: 1rem 1.25rem; border-bottom: 1px solid rgba(245,240,232,.1);
+      display: flex; align-items: center; justify-content: space-between; background: #0d0d0d;
+    }
+    .admin-topbar .brand { font-size: 1.2rem; font-weight: 800; }
+    .admin-topbar .brand span { color: #2a6ee0; }
+    .btn-logout { background: none; border: 1px solid rgba(245,240,232,.2); border-radius: 8px; padding: .5rem 1rem; color: rgba(245,240,232,.6); cursor: pointer; }
+    
+    .admin-body { padding: 2rem; flex: 1; overflow-y: auto; }
+    .table-header { margin-bottom: 1.5rem; }
+    .orders-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .orders-table th { text-align: left; padding: .8rem; font-size: .75rem; text-transform: uppercase; color: rgba(245,240,232,.4); border-bottom: 1px solid rgba(245,240,232,.1); }
+    .orders-table td { padding: 1rem .8rem; border-bottom: 1px solid rgba(245,240,232,.06); vertical-align: top; }
+    
+    .badge { display: inline-block; padding: .25rem .6rem; border-radius: 6px; font-size: .75rem; font-weight: 700; }
+    .badge.offset { background: rgba(224,92,42,.15); color: #e05c2a; }
+    .badge.pound  { background: rgba(42,110,224,.15); color: #2a6ee0; }
+    
+    .badge-status { display: inline-block; padding: .25rem .7rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
+    .badge-status.menunggu { background: rgba(255,193,7,.15); color: #ffc107; }
+    .badge-status.diproses { background: rgba(42,110,224,.15); color: #2a6ee0; }
+    .badge-status.selesai  { background: rgba(26,158,92,.15); color: #1a9e5c; }
+    
+    .file-link { color: #2a6ee0; text-decoration: none; display: block; margin-bottom: .2rem; }
+    .file-link:hover { text-decoration: underline; }
+
+    /* MOBILE RESPONSIVE */
+    @media (max-width: 768px) {
+      .admin-topbar { flex-direction: column; gap: 1rem; align-items: center; text-align: center; }
+      .admin-topbar div { justify-content: center; width: 100%; flex-wrap: wrap; }
+      .admin-body { padding: 1rem; }
+      .orders-table, .orders-table tbody, .orders-table tr, .orders-table td { display: block; width: 100%; box-sizing: border-box; }
+      .orders-table thead { display: none; }
+      .orders-table tr { border: 1px solid rgba(245,240,232,.1); margin-bottom: 1rem; border-radius: 8px; padding: 1rem; background: rgba(245,240,232,.02); }
+      .orders-table td { border-bottom: 1px solid rgba(245,240,232,.05); padding: 0.8rem 0; }
+      .orders-table td:last-child { border-bottom: none; }
+      
+      /* Use nth-child to add labels on mobile */
+      .orders-table td:nth-child(1)::before { content: "ID / Antrian"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(2)::before { content: "Waktu"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(3)::before { content: "Pelanggan"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(4)::before { content: "Layanan & Detail"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(5)::before { content: "Pengiriman"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(6)::before { content: "Pembayaran"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(7)::before { content: "File Unggahan"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(8)::before { content: "Aksi Status"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen-admin-login" class="screen active">
+  <div class="admin-login-box">
+    <h2>Admin Login</h2>
+    <div class="admin-field">
+      <label>USERNAME</label>
+      <input type="text" id="admin-user" placeholder="Username" />
+    </div>
+    <div class="admin-field">
+      <label>PASSWORD</label>
+      <input type="password" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()" />
+    </div>
+    <button class="btn-admin-login" onclick="adminLogin()">Masuk →</button>
+    <button onclick="window.location.href='index.html'" style="width:100%; padding:0.9rem; margin-top:0.75rem; background:transparent; border:1px solid rgba(245,240,232,0.2); color:rgba(245,240,232,0.8); border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; transition:all 0.2s;">← Kembali ke Beranda</button>
+    <p class="login-err" id="login-err">Username atau password salah!</p>
+  </div>
+</div>
+
+<div id="screen-admin" class="screen">
+  <div class="admin-topbar">
+    <div class="brand">UD<span> Master</span> — Admin</div>
+    <div style="display:flex;gap:1rem;">
+      <button class="btn-logout" id="tab-orders" onclick="switchTab('orders')" style="background:#e05c2a;color:#fff;border-color:#e05c2a;">Pesanan</button>
+      <button class="btn-logout" id="tab-settings" onclick="switchTab('settings')">Pengaturan</button>
+      <button class="btn-logout" onclick="logout()">Keluar</button>
+    </div>
+  </div>
+  <div class="admin-body" id="panel-orders">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; border-bottom:1px solid rgba(245,240,232,0.1); padding-bottom:1rem;">
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; margin:0;">Daftar Pesanan Masuk</h2>
+      
+      <!-- Filter Buttons Segmented Control -->
+      <div style="display:inline-flex; background:rgba(245,240,232,0.05); border:1px solid rgba(245,240,232,0.1); padding:4px; border-radius:10px;">
+        <button id="btn-filter-all" onclick="filterAdminOrders('all')" style="padding:0.6rem 1.2rem; background:#2a6ee0; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Semua Pesanan</button>
+        <button id="btn-filter-offset" onclick="filterAdminOrders('offset')" style="padding:0.6rem 1.2rem; background:transparent; color:rgba(245,240,232,0.6); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Offset</button>
+        <button id="btn-filter-pound" onclick="filterAdminOrders('pound')" style="padding:0.6rem 1.2rem; background:transparent; color:rgba(245,240,232,0.6); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Pound</button>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>ID / Antrian</th><th>Waktu</th><th>Pelanggan</th><th>Layanan & Detail</th>
+            <th>Pengiriman</th><th>Pembayaran</th><th>File Unggahan</th><th>Aksi Status</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body">
+          <tr><td colspan="8" style="text-align:center; padding: 2rem;">Memuat data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="admin-body" id="panel-settings" style="display:none;">
+    <div class="table-header"><h2>Pengaturan Sistem</h2></div>
+    <div style="background:rgba(245,240,232,.05); border:1px solid rgba(245,240,232,.1); padding:2rem; border-radius:16px; max-width:500px;">
+      <!-- WA Number Input -->
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Nomor WhatsApp Konfirmasi</label>
+        <p style="font-size:.8rem; color:rgba(245,240,232,.5); margin-bottom:1rem;">Masukkan nomor WA admin (gunakan format 62, contoh: 6281234567890).</p>
+        <input type="text" id="inp-wa-number" style="width:100%; padding:1rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="6281234567890">
+      </div>
+
+      <!-- QRIS Image Upload -->
+      <div style="margin-bottom:2rem; border-top:1px solid rgba(245,240,232,.1); padding-top:1.5rem;">
+        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Upload Gambar QRIS Toko</label>
+        <p style="font-size:.8rem; color:rgba(245,240,232,.5); margin-bottom:1rem;">Unggah gambar/foto QRIS statis Anda (PNG/JPG). Sistem akan mendecode string QRIS secara otomatis untuk mendukung nominal dinamis.</p>
+        <input type="file" id="inp-qris-image" accept="image/*" onchange="handleQRISImage(this)" style="display:none;">
+        <div style="display:flex; gap:1rem; align-items:center;">
+          <button type="button" onclick="document.getElementById('inp-qris-image').click()" style="padding:.6rem 1.2rem; background:rgba(245,240,232,.1); border:1px solid rgba(245,240,232,.2); color:#fff; border-radius:8px; cursor:pointer; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif;">Pilih Gambar</button>
+          <span id="lbl-qris-file" style="font-size:.8rem; color:rgba(245,240,232,.5); word-break:break-all;">Belum ada file dipilih</span>
+        </div>
+        
+        <div id="qris-preview-box" style="margin-top:1rem; display:none; background:rgba(0,0,0,0.2); padding:1rem; border-radius:12px; border:1px solid rgba(245,240,232,0.05);">
+          <img id="img-qris-preview" style="max-width:150px; border-radius:8px; display:block; margin:0 auto 0.8rem;">
+          <div id="qris-status-msg" style="font-size:.8rem; text-align:center; font-weight:bold;"></div>
+        </div>
+        <input type="hidden" id="inp-qris-string" value="">
+      </div>
+
+      <button onclick="saveSettings()" style="width:100%; padding:1rem; background:#2a6ee0; color:#fff; border:none; border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem; transition:background .2s; margin-bottom: 2rem;">Simpan Pengaturan</button>
+
+      <!-- Change Password -->
+      <div style="border-top:1px solid rgba(245,240,232,.1); padding-top:1.5rem;">
+        <h3 style="margin-top:0; font-size:1rem; margin-bottom:1rem;">Ganti Password Admin</h3>
+        
+        <div style="margin-bottom:1rem; position:relative;">
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Password Lama</label>
+          <input type="password" id="inp-old-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Masukkan password lama">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-old-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+        </div>
+        
+        <div style="margin-bottom:1rem; position:relative;">
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Password Baru</label>
+          <input type="password" id="inp-new-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Masukkan password baru">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-new-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+        </div>
+
+        <div style="margin-bottom:1.5rem; position:relative;">
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Konfirmasi Password Baru</label>
+          <input type="password" id="inp-confirm-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Ulangi password baru">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-confirm-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+        </div>
+
+        <button onclick="changePassword()" style="width:100%; padding:1rem; background:#e05c2a; color:#fff; border:none; border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem; transition:background .2s;">Ganti Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let loggedInUser = '';
+
+  // Cek sesi login saat halaman dimuat
+  window.addEventListener('DOMContentLoaded', () => {
+    const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+    const user = sessionStorage.getItem('adminUser');
+    if (isLoggedIn === 'true' && user) {
+      loggedInUser = user;
+      document.getElementById('screen-admin-login').classList.remove('active');
+      document.getElementById('screen-admin').classList.add('active');
+      loadOrders();
+    }
+  });
+
+  function togglePassword(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      iconElement.classList.remove('fa-eye');
+      iconElement.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      iconElement.classList.remove('fa-eye-slash');
+      iconElement.classList.add('fa-eye');
+    }
+  }
+
+  function formatRp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
+  
+  async function adminLogin() {
+    const user = document.getElementById('admin-user').value;
+    const pass = document.getElementById('admin-pass').value;
+    
+    if (!user || !pass) {
+      document.getElementById('login-err').innerText = 'Username dan password harus diisi!';
+      document.getElementById('login-err').style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('api/auth.php?action=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password: pass })
+      });
+      const json = await res.json();
+      
+      if (json.success) {
+        loggedInUser = user;
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        sessionStorage.setItem('adminUser', user);
+        
+        document.getElementById('screen-admin-login').classList.remove('active');
+        document.getElementById('screen-admin').classList.add('active');
+        loadOrders();
+      } else {
+        document.getElementById('login-err').innerText = json.message || 'Username atau password salah!';
+        document.getElementById('login-err').style.display = 'block';
+      }
+    } catch(e) {
+      console.error(e);
+      document.getElementById('login-err').innerText = 'Terjadi kesalahan sistem.';
+      document.getElementById('login-err').style.display = 'block';
+    }
+  }
+  
+  function logout() {
+    sessionStorage.removeItem('adminLoggedIn');
+    sessionStorage.removeItem('adminUser');
+    loggedInUser = '';
+    
+    document.getElementById('screen-admin').classList.remove('active');
+    document.getElementById('screen-admin-login').classList.add('active');
+    document.getElementById('admin-pass').value = '';
+    document.getElementById('login-err').style.display = 'none';
+  }
+
+  async function loadOrders() {
+    try {
+      const res = await fetch('api/get_pesanan.php');
+      const json = await res.json();
+      
+      const tbody = document.getElementById('orders-body');
+      
+      if (!json.success) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Gagal memuat: ${json.message}</td></tr>`;
+        return;
+      }
+
+      if (json.data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem;">Belum ada pesanan masuk.</td></tr>`;
+        return;
+      }
+
+      // Sort strictly by ID / Queue number descending (newest on top)
+      const sortedData = json.data.sort((a, b) => Number(b.id) - Number(a.id));
+
+      tbody.innerHTML = sortedData.map(o => renderOrderRow(o)).join('');
+      
+      // Retain current filter state if clicked
+      const activeFilterBtn = document.querySelector('button[style*="#2a6ee0"]');
+      if (activeFilterBtn) {
+        const type = activeFilterBtn.id.replace('btn-filter-', '');
+        filterAdminOrders(type);
+      }
+
+    } catch(e) {
+      console.error(e);
+      document.getElementById('orders-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Terjadi kesalahan saat memuat data.</td></tr>`;
+    }
+  }
+
+  function renderOrderRow(o) {
+    const isOffset = o.layanan.includes('Offset');
+    const badgeClass = isOffset ? 'offset' : 'pound';
+    
+    let detailHtml = `<span class="badge ${badgeClass}">${o.layanan}</span><br><br>`;
+    detailHtml += `<strong>Jml:</strong> ${Number(o.jumlah).toLocaleString('id-ID')} lbr<br>`;
+    if(isOffset) {
+      detailHtml += `<strong>Warna:</strong> ${o.warna || '-'}<br>`;
+      detailHtml += `<strong>Kertas:</strong> ${o.kertas || '-'}<br>`;
+      detailHtml += `<strong>Ukuran:</strong> ${o.ukuran || '-'}<br>`;
+    }
+    detailHtml += `<br><strong>Catatan:</strong> ${o.catatan || '-'}`;
+    
+    let filesHtml = '-';
+    if (o.files && o.files.length > 0) {
+      filesHtml = o.files.map(f => `<a class="file-link" href="${f.path}" target="_blank"><i class="fa-solid fa-paperclip"></i> ${f.name}</a>`).join('');
+    }
+
+    // Status selector dropdown
+    const statusSelect = `
+      <select onchange="updateOrderStatus(${o.id}, this.value)" style="padding:0.5rem; border-radius:8px; background:#222; color:#fff; border:1px solid rgba(245,240,232,0.15); font-weight:600; cursor:pointer;">
+        <option value="menunggu" ${o.status === 'menunggu' ? 'selected' : ''}>Menunggu Diproses</option>
+        <option value="diproses" ${o.status === 'diproses' ? 'selected' : ''}>Sedang Diproses</option>
+        <option value="selesai" ${o.status === 'selesai' ? 'selected' : ''}>Selesai</option>
+      </select>
+    `;
+    
+    return `
+      <tr data-layanan="${isOffset ? 'offset' : 'pound'}">
+        <td style="font-weight:bold; color:#e05c2a;">#${o.id}</td>
+        <td>${new Date(o.created_at).toLocaleString('id-ID')}</td>
+        <td>
+          <strong>${o.nama}</strong><br>
+          <span style="color:rgba(245,240,232,.5); font-size:0.85rem;">WA: ${o.wa}</span>
+        </td>
+        <td>${detailHtml}</td>
+        <td>
+          <strong>${o.pengiriman}</strong><br>
+          <span style="font-size:.8rem; color:rgba(245,240,232,.5);">${o.alamat || '-'}</span>
+        </td>
+        <td>
+          <strong>${o.bayar}</strong><br>
+          <span style="color:#1a9e5c; font-weight:bold;">${formatRp(o.harga)}</span><br><br>
+          <span class="badge-status ${o.status}">${o.status.toUpperCase()}</span>
+        </td>
+        <td>${filesHtml}</td>
+        <td>${statusSelect}</td>
+      </tr>
+    `;
+  }
+
+  async function updateOrderStatus(id, status) {
+    try {
+      const res = await fetch('api/update_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      const json = await res.json();
+      if (json.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: 'Status pesanan berhasil diperbarui!',
+          timer: 1500,
+          showConfirmButton: false,
+          background: '#151515',
+          color: '#fff'
+        });
+        loadOrders();
+      } else {
+        Swal.fire('Gagal', json.message, 'error');
+      }
+    } catch (e) {
+      Swal.fire('Error', 'Gagal memperbarui status.', 'error');
+    }
+  }
+
+  function filterAdminOrders(type) {
+    const rows = document.querySelectorAll('#orders-body tr');
+    
+    const btnAll = document.getElementById('btn-filter-all');
+    const btnOffset = document.getElementById('btn-filter-offset');
+    const btnPound = document.getElementById('btn-filter-pound');
+    
+    // Reset button styles
+    [btnAll, btnOffset, btnPound].forEach(btn => {
+      btn.style.background = 'transparent';
+      btn.style.color = 'rgba(245,240,232,0.6)';
+    });
+    
+    if (type === 'all') {
+      btnAll.style.background = '#2a6ee0';
+      btnAll.style.color = '#fff';
+    } else if (type === 'offset') {
+      btnOffset.style.background = '#2a6ee0';
+      btnOffset.style.color = '#fff';
+    } else if (type === 'pound') {
+      btnPound.style.background = '#2a6ee0';
+      btnPound.style.color = '#fff';
+    }
+
+    rows.forEach(row => {
+      if (!row.hasAttribute('data-layanan')) return; // skip loader row
+      const isOffset = row.getAttribute('data-layanan') === 'offset';
+      if (type === 'all') {
+        row.style.display = '';
+      } else if (type === 'offset') {
+        row.style.display = isOffset ? '' : 'none';
+      } else if (type === 'pound') {
+        row.style.display = !isOffset ? '' : 'none';
+      }
+    });
+  }
+
+  function switchTab(tab) {
+    if(tab === 'orders') {
+      document.getElementById('panel-orders').style.display = 'block';
+      document.getElementById('panel-settings').style.display = 'none';
+      document.getElementById('tab-orders').style.background = '#e05c2a';
+      document.getElementById('tab-orders').style.color = '#fff';
+      document.getElementById('tab-orders').style.borderColor = '#e05c2a';
+      document.getElementById('tab-settings').style.background = 'transparent';
+      document.getElementById('tab-settings').style.color = 'rgba(245,240,232,.6)';
+      document.getElementById('tab-settings').style.borderColor = 'rgba(245,240,232,.2)';
+    } else {
+      document.getElementById('panel-orders').style.display = 'none';
+      document.getElementById('panel-settings').style.display = 'block';
+      document.getElementById('tab-settings').style.background = '#e05c2a';
+      document.getElementById('tab-settings').style.color = '#fff';
+      document.getElementById('tab-settings').style.borderColor = '#e05c2a';
+      document.getElementById('tab-orders').style.background = 'transparent';
+      document.getElementById('tab-orders').style.color = 'rgba(245,240,232,.6)';
+      document.getElementById('tab-orders').style.borderColor = 'rgba(245,240,232,.2)';
+      loadSettings();
+    }
+  }
+
+  function handleQRISImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('lbl-qris-file').textContent = file.name;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        document.getElementById('qris-preview-box').style.display = 'block';
+        document.getElementById('img-qris-preview').src = e.target.result;
+
+        const statusEl = document.getElementById('qris-status-msg');
+        if (code) {
+          document.getElementById('inp-qris-string').value = code.data;
+          statusEl.innerHTML = '<span style="color:#1a9e5c;"><i class="fa-solid fa-circle-check"></i> QR Code berhasil dibaca! String QRIS terdeteksi.</span>';
+        } else {
+          document.getElementById('inp-qris-string').value = '';
+          statusEl.innerHTML = '<span style="color:#ffc107;"><i class="fa-solid fa-triangle-exclamation"></i> Gagal mendecode QR Code dari gambar. QRIS akan tampil sebagai gambar statis tanpa nominal otomatis.</span>';
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function loadSettings() {
+    try {
+      const res = await fetch('api/settings.php');
+      const json = await res.json();
+      if(json.success && json.data) {
+        document.getElementById('inp-wa-number').value = json.data.wa_number || '';
+        document.getElementById('inp-qris-string').value = json.data.qris_string || '';
+
+        if(json.data.qris_image) {
+          document.getElementById('qris-preview-box').style.display = 'block';
+          document.getElementById('img-qris-preview').src = json.data.qris_image + '?t=' + Date.now();
+          document.getElementById('lbl-qris-file').textContent = 'Gambar saat ini aktif';
+          if(json.data.qris_string) {
+            document.getElementById('qris-status-msg').innerHTML = '<span style="color:#1a9e5c;"><i class="fa-solid fa-circle-check"></i> QRIS Dinamis Aktif (String terdeteksi)</span>';
+          } else {
+            document.getElementById('qris-status-msg').innerHTML = '<span style="color:#ffc107;"><i class="fa-solid fa-triangle-exclamation"></i> Gambar aktif tetapi QRIS gagal didecode. Nominal dinamis tidak aktif.</span>';
+          }
+        }
+      }
+    } catch(e) { console.error('Gagal memuat pengaturan', e); }
+  }
+
+  async function saveSettings() {
+    const wa = document.getElementById('inp-wa-number').value.trim();
+    const qrisString = document.getElementById('inp-qris-string').value.trim();
+    const qrisFileInput = document.getElementById('inp-qris-image');
+
+    if(!wa) return alert('Nomor WA tidak boleh kosong!');
+
+    const fd = new FormData();
+    fd.append('wa_number', wa);
+    fd.append('qris_string', qrisString);
+    if (qrisFileInput.files.length > 0) {
+      fd.append('qris_image', qrisFileInput.files[0]);
+    }
+
+    try {
+      const res = await fetch('api/settings.php', {
+        method: 'POST',
+        body: fd
+      });
+      const json = await res.json();
+      if(json.success) {
+        Swal.fire('Berhasil', json.message, 'success');
+        loadSettings();
+      } else {
+        Swal.fire('Gagal', 'Gagal menyimpan: ' + json.message, 'error');
+      }
+    } catch(e) {
+      Swal.fire('Error', 'Terjadi kesalahan saat menyimpan pengaturan.', 'error');
+    }
+  }
+
+  async function changePassword() {
+    const oldPass = document.getElementById('inp-old-pass').value;
+    const newPass = document.getElementById('inp-new-pass').value;
+    const confirmPass = document.getElementById('inp-confirm-pass').value;
+    
+    if(!oldPass || !newPass || !confirmPass) {
+      return Swal.fire('Peringatan', 'Semua field password harus diisi!', 'warning');
+    }
+
+    if(newPass !== confirmPass) {
+      return Swal.fire('Peringatan', 'Konfirmasi password baru tidak cocok!', 'warning');
+    }
+
+    try {
+      const res = await fetch('api/auth.php?action=change_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: loggedInUser, old_password: oldPass, new_password: newPass })
+      });
+      const json = await res.json();
+      
+      if(json.success) {
+        Swal.fire('Berhasil', json.message, 'success');
+        document.getElementById('inp-old-pass').value = '';
+        document.getElementById('inp-new-pass').value = '';
+        document.getElementById('inp-confirm-pass').value = '';
+      } else {
+        Swal.fire('Gagal', json.message, 'error');
+      }
+    } catch(e) {
+      Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
+    }
+  }
+</script>
+</body>
+</html>
