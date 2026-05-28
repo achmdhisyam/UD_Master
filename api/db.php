@@ -38,15 +38,8 @@ if (mysqli_query($conn, $tableAdminQuery)) {
     // Check if there is an admin, insert default admin if empty
     $checkAdmin = mysqli_query($conn, "SELECT id, password FROM admin_users LIMIT 1");
     if (mysqli_num_rows($checkAdmin) == 0) {
-        $hash = password_hash('admin123', PASSWORD_BCRYPT);
+        $hash = password_hash('master', PASSWORD_BCRYPT);
         mysqli_query($conn, "INSERT INTO admin_users (username, password) VALUES ('admin', '$hash')");
-    } else {
-        // Upgrade existing plaintext password if any
-        $adminRow = mysqli_fetch_assoc($checkAdmin);
-        if (substr($adminRow['password'], 0, 3) !== '$2y' && substr($adminRow['password'], 0, 3) !== '$2a') {
-            $newHash = password_hash($adminRow['password'], PASSWORD_BCRYPT);
-            mysqli_query($conn, "UPDATE admin_users SET password = '$newHash' WHERE id = " . $adminRow['id']);
-        }
     }
 }
 
@@ -76,11 +69,6 @@ if (!mysqli_query($conn, $tablePesananQuery)) {
     exit;
 }
 
-// Tambah kolom bukti_bayar jika belum ada
-$checkCol = mysqli_query($conn, "SHOW COLUMNS FROM pesanan LIKE 'bukti_bayar'");
-if (mysqli_num_rows($checkCol) == 0) {
-    mysqli_query($conn, "ALTER TABLE pesanan ADD COLUMN bukti_bayar VARCHAR(255) DEFAULT NULL");
-}
 
 // 6. Buat tabel files jika belum ada
 $tableFilesQuery = "

@@ -22,7 +22,7 @@
     }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans';
       background: var(--paper);
       color: var(--ink);
       min-height: 100vh;
@@ -36,7 +36,7 @@
       pointer-events: none; z-index: 0;
     }
 
-    h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans'; }
     .screen { display: none; min-height: 100vh; position: relative; z-index: 1; }
     .screen.active { display: flex; }
 
@@ -53,7 +53,7 @@
     .admin-float-btn::after {
       content: 'Admin'; position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%);
       background: var(--ink); color: rgba(245,240,232,.8);
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .72rem; font-weight: 500;
+      font-family: 'Plus Jakarta Sans'; font-size: .72rem; font-weight: 500;
       padding: .25rem .6rem; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .18s;
     }
     .admin-float-btn:hover::after { opacity: 1; }
@@ -129,7 +129,7 @@
     .field input, .field select, .field textarea {
       width: 100%; background: var(--white); border: 2px solid var(--border);
       border-radius: 10px; padding: .85rem 1rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; color: var(--ink);
+      font-family: 'Plus Jakarta Sans'; font-size: .95rem; color: var(--ink);
       transition: border-color .2s, box-shadow .2s; appearance: none; outline: none;
     }
     .field input:focus, .field select:focus, .field textarea:focus {
@@ -147,7 +147,7 @@
     }
     .service-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .service-card .svc-icon { font-size: 2rem; display: block; margin-bottom: .5rem; }
-    .service-card .svc-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 700; display: block; margin-bottom: .2rem; }
+    .service-card .svc-name { font-family: 'Plus Jakarta Sans'; font-size: .95rem; font-weight: 700; display: block; margin-bottom: .2rem; }
     .service-card .svc-sub { font-size: .75rem; color: var(--muted); line-height: 1.4; }
     .service-card:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 4px rgba(224,92,42,.10); }
     .service-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -160,7 +160,7 @@
       font-size: .82rem; line-height: 1.7;
     }
     .price-info-box .pib-title {
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--accent);
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; color: var(--accent);
       font-size: .9rem; margin-bottom: .5rem; display: flex; align-items: center; gap: .4rem;
     }
     .price-info-box .pib-row { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); }
@@ -181,7 +181,7 @@
     .qty-btn:hover { background: var(--cream); }
     .qty-input {
       flex: 1; text-align: center;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 1rem;
       border: none !important; border-left: 2px solid var(--border) !important; border-right: 2px solid var(--border) !important;
       border-radius: 0 !important; padding: 0 .6rem !important;
       line-height: 48px; height: 48px; outline: none; background: transparent; box-shadow: none !important;
@@ -204,7 +204,7 @@
     }
     .color-check-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .color-swatch { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(0,0,0,.12); }
-    .color-check-item .color-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .88rem; font-weight: 700; }
+    .color-check-item .color-label { font-family: 'Plus Jakarta Sans'; font-size: .88rem; font-weight: 700; }
     .color-check-item:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 3px rgba(224,92,42,.10); }
     .color-check-item:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 
@@ -217,7 +217,7 @@
     .upload-area:hover, .upload-area.dragover { border-color: var(--accent); background: #fff8f5; }
     .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .upload-icon { font-size: 2rem; margin-bottom: .5rem; display: block; }
-    .upload-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .95rem; color: var(--accent); margin-bottom: .25rem; }
+    .upload-label { display: block; font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .95rem; color: var(--accent); margin-bottom: .25rem; }
     .upload-hint { font-size: .75rem; color: var(--muted); }
     .file-list { margin-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
     .file-item { display: flex; align-items: center; gap: .75rem; background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: .6rem .9rem; }
@@ -236,7 +236,7 @@
     }
     .delivery-card input { position: absolute; opacity: 0; width: 0; height: 0; }
     .delivery-card .dc-icon { font-size: 1.8rem; display: block; margin-bottom: .4rem; }
-    .delivery-card .dc-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
+    .delivery-card .dc-name { font-family: 'Plus Jakarta Sans'; font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
     .delivery-card .dc-sub { font-size: .75rem; color: var(--muted); }
     .delivery-card:has(input:checked) { border-color: var(--accent2); background: #f2f7ff; box-shadow: 0 0 0 4px rgba(42,110,224,.1); }
     .delivery-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -252,7 +252,7 @@
     }
     .pay-pill input { position: absolute; opacity: 0; width: 0; height: 0; }
     .pay-pill .pill-icon { font-size: 1.8rem; margin-bottom: .4rem; display: block; }
-    .pay-pill .pill-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 700; }
+    .pay-pill .pill-label { font-family: 'Plus Jakarta Sans'; font-size: .95rem; font-weight: 700; }
     .pay-pill .pill-sub   { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
     .pay-pill:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 4px rgba(224,92,42,.10); }
     .field textarea { resize: vertical; min-height: 90px; }
@@ -271,7 +271,7 @@
     .summary-total {
       display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem;
       border-top: 2px solid rgba(245,240,232,.2);
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.2rem;
+      font-family: 'Plus Jakarta Sans'; font-weight: 800; font-size: 1.2rem;
     }
     .summary-total .price { color: var(--accent); }
     .below-min-note {
@@ -299,7 +299,7 @@
     .qris-wa-btn {
       display: inline-flex; align-items: center; gap: .5rem;
       background: #25D366; color: white; border: none; border-radius: 999px;
-      padding: .7rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .9rem;
+      padding: .7rem 1.4rem; font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .9rem;
       cursor: pointer; margin-top: .75rem; transition: all .2s; text-decoration: none;
     }
     .qris-wa-btn:hover { background: #20b558; transform: scale(1.03); }
@@ -307,14 +307,14 @@
     .form-nav { display: flex; gap: .75rem; margin-top: 2rem; padding-bottom: 2rem; }
     .btn-back {
       background: none; border: 2px solid var(--border); border-radius: 999px;
-      padding: .75rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+      padding: .75rem 1.4rem; font-family: 'Plus Jakarta Sans'; font-weight: 700;
       cursor: pointer; color: var(--ink); transition: all .2s; white-space: nowrap;
     }
     .btn-back:hover { border-color: var(--ink); }
     .btn-next {
       flex: 1; background: var(--accent); color: var(--white);
       border: none; border-radius: 999px; padding: .9rem 1.25rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 1rem;
       cursor: pointer; transition: all .2s; letter-spacing: .02em;
     }
     .btn-next:hover { background: #c94e20; transform: scale(1.02); }
@@ -333,7 +333,7 @@
       animation: pop-in .5s cubic-bezier(.17,.67,.3,1.5) both;
       box-shadow: 0 0 40px rgba(26,158,92,.3);
     }
-    .success-number { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 4rem; font-weight: 800; color: var(--accent); margin: .5rem 0 .25rem; }
+    .success-number { font-family: 'Plus Jakarta Sans'; font-size: 4rem; font-weight: 800; color: var(--accent); margin: .5rem 0 .25rem; }
     .success-label { font-size: .8rem; color: rgba(245,240,232,.45); letter-spacing: .1em; text-transform: uppercase; }
     #screen-success h2 { font-size: 1.8rem; margin: 1.2rem 0 .5rem; }
     #screen-success p  { color: rgba(245,240,232,.6); max-width: 360px; line-height: 1.6; }
@@ -344,7 +344,7 @@
       border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; width: 100%; max-width: 420px;
     }
     .success-status-card h4 {
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--paper);
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; color: var(--paper);
       margin-bottom: 1.2rem; font-size: .95rem; text-align: left;
     }
     .status-timeline { display: flex; flex-direction: column; gap: 0; text-align: left; }
@@ -365,7 +365,7 @@
     .status-dot.current { background: var(--accent); border-color: var(--accent); animation: pulse-dot 1.5s infinite; }
     .status-dot.pending { background: rgba(245,240,232,.08); }
     .status-info { padding: .4rem 0 1.2rem; }
-    .status-info .s-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .9rem; color: var(--paper); }
+    .status-info .s-name { font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .9rem; color: var(--paper); }
     .status-info .s-sub  { font-size: .78rem; color: rgba(245,240,232,.45); margin-top: .15rem; }
     .status-info .s-sub.active { color: var(--accent); font-weight: 500; }
 
@@ -374,12 +374,12 @@
       background: rgba(37,211,102,.08); border: 1.5px solid rgba(37,211,102,.25);
       border-radius: 14px; padding: 1.25rem; width: 100%; max-width: 420px; margin-bottom: 1.25rem;
     }
-    .success-wa-box h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; color: #25D366; margin-bottom: .5rem; }
+    .success-wa-box h4 { font-family: 'Plus Jakarta Sans'; font-size: .9rem; color: #25D366; margin-bottom: .5rem; }
     .success-wa-box p { font-size: .82rem; color: rgba(245,240,232,.55); line-height: 1.5; margin-bottom: .85rem; }
     .wa-btn-big {
       display: inline-flex; align-items: center; gap: .6rem;
       background: #25D366; color: white; border: none; border-radius: 999px;
-      padding: .8rem 1.6rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .95rem;
+      padding: .8rem 1.6rem; font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .95rem;
       cursor: pointer; transition: all .2s; text-decoration: none; width: 100%; justify-content: center;
     }
     .wa-btn-big:hover { background: #20b558; transform: scale(1.02); }
@@ -387,7 +387,7 @@
     .btn-home {
       margin-top: 1.5rem; background: var(--accent); color: var(--white);
       border: none; border-radius: 999px; padding: .9rem 2.5rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700;
+      font-family: 'Plus Jakarta Sans'; font-size: 1rem; font-weight: 700;
       cursor: pointer; transition: all .2s;
     }
     .btn-home:hover { background: #c94e20; transform: scale(1.04); }
@@ -408,13 +408,13 @@
     .admin-field input {
       width: 100%; background: rgba(245,240,232,.08); border: 2px solid rgba(245,240,232,.15);
       border-radius: 10px; padding: .85rem 1rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; color: var(--paper); outline: none; transition: border-color .2s;
+      font-family: 'Plus Jakarta Sans'; font-size: .95rem; color: var(--paper); outline: none; transition: border-color .2s;
     }
     .admin-field input:focus { border-color: var(--accent2); }
     .btn-admin-login {
       width: 100%; background: var(--accent2); color: var(--white);
       border: none; border-radius: 999px; padding: .9rem; margin-top: .5rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s;
+      font-family: 'Plus Jakarta Sans'; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .2s;
     }
     .btn-admin-login:hover { background: #1d57b3; transform: scale(1.02); }
     .login-err { color: #ff6b6b; font-size: .82rem; text-align: center; margin-top: .8rem; display: none; }
@@ -438,7 +438,7 @@
     .admin-tab {
       background: rgba(245,240,232,.06); border: 1px solid rgba(245,240,232,.12);
       border-radius: 8px; padding: .55rem 1.2rem; color: rgba(245,240,232,.55);
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .82rem;
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .82rem;
       cursor: pointer; transition: all .2s;
     }
     .admin-tab.active { background: var(--accent2); border-color: var(--accent2); color: white; }
@@ -452,7 +452,7 @@
     @media (min-width: 480px) { .admin-stats { grid-template-columns: repeat(4, 1fr); } }
     .stat-card { background: rgba(245,240,232,.05); border: 1px solid rgba(245,240,232,.1); border-radius: 12px; padding: 1rem; }
     .stat-label { font-size: .7rem; color: rgba(245,240,232,.4); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .4rem; }
-    .stat-val   { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; font-weight: 800; }
+    .stat-val   { font-family: 'Plus Jakarta Sans'; font-size: 1.8rem; font-weight: 800; }
     .stat-val.orange { color: var(--accent); }
     .stat-val.blue   { color: var(--accent2); }
     .stat-val.green  { color: var(--success); }
@@ -464,7 +464,7 @@
     .admin-search {
       background: rgba(245,240,232,.08); border: 1px solid rgba(245,240,232,.15);
       border-radius: 8px; padding: .5rem 1rem;
-      color: var(--paper); font-family: 'Plus Jakarta Sans', sans-serif; font-size: .85rem; outline: none; width: 100%;
+      color: var(--paper); font-family: 'Plus Jakarta Sans'; font-size: .85rem; outline: none; width: 100%;
     }
     @media (min-width: 480px) { .admin-search { width: 200px; } }
     .admin-search::placeholder { color: rgba(245,240,232,.3); }
@@ -477,7 +477,7 @@
     .orders-table tbody tr { border-bottom: 1px solid rgba(245,240,232,.06); transition: background .15s; }
     .orders-table tbody tr:hover { background: rgba(245,240,232,.04); }
     .orders-table tbody td { padding: .8rem .7rem; vertical-align: middle; }
-    .orders-table tbody td:first-child { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--accent); }
+    .orders-table tbody td:first-child { font-family: 'Plus Jakarta Sans'; font-weight: 700; color: var(--accent); }
     .badge { display: inline-block; padding: .22rem .65rem; border-radius: 999px; font-size: .7rem; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
     .badge.offset { background: rgba(224,92,42,.15); color: var(--accent); }
     .badge.pound  { background: rgba(42,110,224,.15); color: var(--accent2); }
@@ -493,7 +493,7 @@
     .empty-state p { font-size: .88rem; }
     .btn-logout {
       background: none; border: 1px solid rgba(245,240,232,.2); border-radius: 8px;
-      padding: .5rem 1rem; color: rgba(245,240,232,.6); font-family: 'Plus Jakarta Sans', sans-serif;
+      padding: .5rem 1rem; color: rgba(245,240,232,.6); font-family: 'Plus Jakarta Sans';
       font-size: .82rem; cursor: pointer; transition: all .2s;
     }
     .btn-logout:hover { border-color: #ff6b6b; color: #ff6b6b; }
@@ -503,7 +503,7 @@
     @media (max-width: 480px) { .report-grid { grid-template-columns: 1fr; } }
     .report-card { background: rgba(245,240,232,.05); border: 1px solid rgba(245,240,232,.1); border-radius: 12px; padding: 1.25rem; }
     .report-card h4 { font-size: .75rem; color: rgba(245,240,232,.4); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 1rem; }
-    .report-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--success); margin-bottom: .3rem; }
+    .report-val { font-family: 'Plus Jakarta Sans'; font-size: 1.6rem; font-weight: 800; color: var(--success); margin-bottom: .3rem; }
     .report-sub { font-size: .8rem; color: rgba(245,240,232,.4); }
     .breakdown-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
     .breakdown-table th { text-align: left; padding: .6rem .8rem; font-size: .7rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(245,240,232,.35); border-bottom: 1px solid rgba(245,240,232,.08); }
@@ -539,8 +539,8 @@
     .modal-status-opt span { font-size: .9rem; }
     .modal-status-opt:has(input:checked) { border-color: var(--accent); background: rgba(224,92,42,.1); }
     .modal-btns { display: flex; gap: .75rem; }
-    .modal-btn-cancel { flex: 1; background: none; border: 1.5px solid rgba(245,240,232,.2); border-radius: 999px; padding: .75rem; color: rgba(245,240,232,.6); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; cursor: pointer; }
-    .modal-btn-save   { flex: 1; background: var(--accent2); border: none; border-radius: 999px; padding: .75rem; color: white; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; cursor: pointer; }
+    .modal-btn-cancel { flex: 1; background: none; border: 1.5px solid rgba(245,240,232,.2); border-radius: 999px; padding: .75rem; color: rgba(245,240,232,.6); font-family: 'Plus Jakarta Sans'; font-weight: 700; cursor: pointer; }
+    .modal-btn-save   { flex: 1; background: var(--accent2); border: none; border-radius: 999px; padding: .75rem; color: white; font-family: 'Plus Jakarta Sans'; font-weight: 700; cursor: pointer; }
 
     /* ══ ANIMATIONS ══ */
     @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }

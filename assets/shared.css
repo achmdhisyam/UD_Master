@@ -2,6 +2,9 @@
    UD_MASTER — SHARED STYLES
    ════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body, html, input, select, textarea, button, a, span, div, h1, h2, h3, h4, h5, h6, label, table, tr, td, th {
+  font-family: 'Plus Jakarta Sans';
+}
 :root {
   --ink:    #0d0d0d;
   --paper:  #f5f0e8;
@@ -17,7 +20,7 @@
 }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans';
   background: var(--paper);
   color: var(--ink);
   min-height: 100vh;
@@ -29,7 +32,7 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
   pointer-events: none; z-index: 0;
 }
-h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
+h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans'; }
 
 /* ── HEADER ── */
 .form-header {
@@ -135,7 +138,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 .field input, .field select, .field textarea {
   width: 100%; background: var(--white);
   border: 2px solid var(--border); border-radius: 10px;
-  padding: .85rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif;
+  padding: .85rem 1rem; font-family: 'Plus Jakarta Sans';
   font-size: .95rem; color: var(--ink);
   transition: border-color .2s, box-shadow .2s;
   appearance: none; outline: none;
@@ -163,7 +166,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 }
 .service-card input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 .service-card .svc-icon { font-size: 2rem; display: block; margin-bottom: .5rem; }
-.service-card .svc-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 700; display: block; margin-bottom: .2rem; }
+.service-card .svc-name { font-family: 'Plus Jakarta Sans'; font-size: .95rem; font-weight: 700; display: block; margin-bottom: .2rem; }
 .service-card .svc-sub  { font-size: .75rem; color: var(--muted); line-height: 1.4; }
 .service-card:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 4px rgba(224,92,42,.10); }
 .service-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -177,7 +180,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
       font-size: .82rem; line-height: 1.7;
     }
     .price-info-box .pib-title {
-      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--accent);
+      font-family: 'Plus Jakarta Sans'; font-weight: 700; color: var(--accent);
       font-size: .9rem; margin-bottom: .5rem; display: flex; align-items: center; gap: .4rem;
     }
     .price-info-box .pib-row { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); }
@@ -200,7 +203,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 .qty-btn:hover { background: var(--cream); }
 .qty-input {
   flex: 1; text-align: center;
-  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;
+  font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 1rem;
   border: none !important;
   border-left: 2px solid var(--border) !important;
   border-right: 2px solid var(--border) !important;
@@ -221,7 +224,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 }
 .color-check-item input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
 .color-swatch { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 2px solid rgba(0,0,0,.12); }
-.color-check-item .color-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .88rem; font-weight: 700; }
+.color-check-item .color-label { font-family: 'Plus Jakarta Sans'; font-size: .88rem; font-weight: 700; }
 .color-check-item:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 3px rgba(224,92,42,.10); }
 .color-check-item:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
 
@@ -237,7 +240,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .upload-icon { font-size: 2.2rem; margin-bottom: .6rem; display: block; transition: transform .3s ease; }
 .upload-area:hover .upload-icon { transform: translateY(-4px) scale(1.05); }
-.upload-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .95rem; color: var(--accent); margin-bottom: .25rem; }
+.upload-label { display: block; font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: .95rem; color: var(--accent); margin-bottom: .25rem; }
 .upload-hint { font-size: .75rem; color: var(--muted); }
 .file-list { margin-top: .75rem; display: flex; flex-direction: column; gap: .5rem; }
 .file-item {
@@ -266,14 +269,14 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
 .btn-back {
   background: none; border: 2px solid var(--border);
   border-radius: 999px; padding: .75rem 1.4rem;
-  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  font-family: 'Plus Jakarta Sans'; font-weight: 700;
   cursor: pointer; color: var(--ink); transition: all .2s; white-space: nowrap;
 }
 .btn-back:hover { border-color: var(--ink); }
 .btn-next {
   flex: 1; background: var(--accent); color: var(--white);
   border: none; border-radius: 999px; padding: .9rem 1.25rem;
-  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+  font-family: 'Plus Jakarta Sans'; font-weight: 700;
   font-size: 1rem; cursor: pointer; transition: all .2s; letter-spacing: .02em;
 }
 .btn-next:hover { background: #c94e20; transform: scale(1.02); }
@@ -297,7 +300,7 @@ h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
   display: flex; justify-content: space-between;
   margin-top: 1rem; padding-top: 1rem;
   border-top: 2px solid rgba(245,240,232,.2);
-  font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.2rem;
+  font-family: 'Plus Jakarta Sans'; font-weight: 800; font-size: 1.2rem;
 }
 .summary-total .price { color: var(--accent); }
 
@@ -309,7 +312,7 @@ background: var(--white); border: 2px solid var(--border); border-radius: 12px;
     }
     .delivery-card input { position: absolute; opacity: 0; width: 0; height: 0; }
     .delivery-card .dc-icon { font-size: 1.8rem; display: block; margin-bottom: .4rem; }
-    .delivery-card .dc-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
+    .delivery-card .dc-name { font-family: 'Plus Jakarta Sans'; font-size: .9rem; font-weight: 700; margin-bottom: .2rem; }
     .delivery-card .dc-sub { font-size: .75rem; color: var(--muted); }
     .delivery-card:has(input:checked) { border-color: var(--accent2); background: #f2f7ff; box-shadow: 0 0 0 4px rgba(42,110,224,.1); }
     .delivery-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
@@ -326,7 +329,7 @@ background: var(--white); border: 2px solid var(--border); border-radius: 12px;
 }
 .pay-pill input { position: absolute; opacity: 0; width: 0; height: 0; }
 .pay-pill .pill-icon { font-size: 1.8rem; margin-bottom: .4rem; display: block; }
-.pay-pill .pill-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; font-weight: 700; }
+.pay-pill .pill-label { font-family: 'Plus Jakarta Sans'; font-size: .95rem; font-weight: 700; }
 .pay-pill .pill-sub   { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
 .pay-pill:has(input:checked) { border-color: var(--accent); background: #fff5f2; box-shadow: 0 0 0 4px rgba(224,92,42,.10); }
 .pay-pill:active { transform: scale(0.98); }
@@ -630,7 +633,7 @@ background: var(--white); border: 2px solid var(--border); border-radius: 12px;
   border: 2px solid var(--border);
   border-radius: 20px;
   padding: 0.35rem 0.85rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans';
   font-weight: 700;
   font-size: 0.78rem;
   color: var(--ink);
@@ -709,7 +712,7 @@ background: var(--white); border: 2px solid var(--border); border-radius: 12px;
   justify-content: space-between;
 }
 .preview-modal-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans';
   font-weight: 800;
   font-size: 1.1rem;
   color: var(--ink);

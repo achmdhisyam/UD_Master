@@ -48,8 +48,11 @@ Untuk menjalankan platform ini secara lokal atau di server, pastikan lingkungan 
 
 ## 💾 Langkah Instalasi (Local Development)
 
-1. **Clone atau Salin Proyek:**
-   Tempatkan folder `UD_Master` di direktori root server Anda (misal `C:\laragon\www\UD_Master` jika memakai Laragon).
+1. **Clone Proyek:**
+   Buka terminal di direktori root server web Anda (misal `C:\laragon\www\` untuk pengguna Laragon) lalu jalankan perintah:
+   ```bash
+   git clone https://github.com/achmdhisyam/UD_Master.git
+   ```
 
 2. **Setup Database:**
    - Aktifkan MySQL di Laragon/XAMPP.
@@ -64,24 +67,6 @@ Untuk menjalankan platform ini secara lokal atau di server, pastikan lingkungan 
    - **Username:** `admin`
    - **Password:** `master`
    *Segera ganti password Anda di menu Pengaturan setelah masuk pertama kali.*
-
----
-
-## 📱 Mengakses Proyek Lewat HP (Satu Jaringan Wi-Fi/LAN)
-
-Agar website ini dapat diakses dan diuji langsung melalui perangkat HP menggunakan web server lokal komputer Anda:
-
-1. **Cari IP Address Komputer:**
-   Buka Command Prompt (CMD) di Windows, jalankan perintah `ipconfig`, lalu catat **IPv4 Address** aktif Anda (contoh: `192.168.1.15`).
-   
-2. **Buka di Browser HP:**
-   Gunakan browser HP Anda untuk mengakses URL dengan alamat IP komputer:
-   ```text
-   http://192.168.1.15/UD_Master
-   ```
-   
-3. **Konfigurasi Firewall (Jika Koneksi Timed Out):**
-   Jika HP gagal memuat halaman, pastikan jenis jaringan Wi-Fi di Windows disetel ke **Private Network** atau izinkan port **Apache HTTP Server** (port 80/443) melewati Windows Defender Firewall.
 
 ---
 
