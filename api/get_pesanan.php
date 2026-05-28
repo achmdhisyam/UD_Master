@@ -1,7 +1,15 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access. Silakan login terlebih dahulu.']);
+    exit;
+}
+
 require_once 'db.php';
+require_once 'cleanup.php';
 
 $query = "
     SELECT p.*, GROUP_CONCAT(f.path_file) as file_paths, GROUP_CONCAT(f.nama_file) as file_names

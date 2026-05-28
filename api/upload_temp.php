@@ -21,6 +21,35 @@ if (isset($_FILES['file'])) {
             continue;
         }
 
+        // Cek MIME Type asli berkas untuk keamanan (A2)
+        $mime = mime_content_type($tmp);
+        $allowed_mimes = [
+            'pdf' => ['application/pdf'],
+            'doc' => ['application/msword'],
+            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            'xls' => ['application/vnd.ms-excel'],
+            'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+            'csv' => ['text/csv', 'text/plain', 'application/csv', 'text/comma-separated-values'],
+            'jpg' => ['image/jpeg', 'image/pjpeg'],
+            'jpeg' => ['image/jpeg', 'image/pjpeg'],
+            'png' => ['image/png', 'image/x-png'],
+            'gif' => ['image/gif'],
+            'bmp' => ['image/bmp', 'image/x-ms-bmp'],
+            'webp' => ['image/webp']
+        ];
+
+        $isValidMime = false;
+        if (isset($allowed_mimes[$ext])) {
+            if (in_array($mime, $allowed_mimes[$ext])) {
+                $isValidMime = true;
+            }
+        }
+
+        if (!$isValidMime) {
+            $rejected[] = $nama_file;
+            continue;
+        }
+
         // Pastikan nama file aman
         $nama_baru = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "_", $nama_file);
         $path = $folder . $nama_baru;

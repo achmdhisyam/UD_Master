@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 
 $configFile = 'config.json';
@@ -15,6 +16,11 @@ if (!file_exists($configFile)) {
 $config = json_decode(file_get_contents($configFile), true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Unauthorized access. Silakan login terlebih dahulu.']);
+        exit;
+    }
     // Handle file upload
     if (isset($_FILES['qris_image']) && $_FILES['qris_image']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['qris_image']['name'], PATHINFO_EXTENSION);

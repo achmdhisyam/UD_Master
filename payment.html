@@ -492,7 +492,12 @@
           <div>
             <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Nomor Antrian
             </div>
-            <h3 style="font-size:1.8rem; font-weight:800; color:var(--accent); margin:0;" id="su-res-antrian">#001</h3>
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.2rem;">
+              <h3 style="font-size:1.8rem; font-weight:800; color:var(--accent); margin:0;" id="su-res-antrian">#001</h3>
+              <button onclick="copyAntrian()" title="Salin Nomor Antrian" style="background:var(--cream); border:1px solid var(--border); border-radius:6px; padding:0.25rem 0.5rem; font-size:0.75rem; cursor:pointer; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:4px; transition:all 0.2s;">
+                <i class="fa-solid fa-copy"></i> Salin
+              </button>
+            </div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700;">Pelanggan
@@ -1265,6 +1270,23 @@
 
     function resetAndGoHome() {
       window.location.href = 'index.html';
+    }
+
+    function copyAntrian() {
+      const text = document.getElementById('su-res-antrian').textContent.replace('#', '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Tersalin!',
+          text: `Nomor antrian ${text} berhasil disalin.`,
+          timer: 1500,
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end'
+        });
+      }).catch(err => {
+        console.error('Gagal menyalin:', err);
+      });
     }
   </script>
 </body>

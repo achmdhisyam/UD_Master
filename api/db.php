@@ -36,9 +36,17 @@ $tableAdminQuery = "
 ";
 if (mysqli_query($conn, $tableAdminQuery)) {
     // Check if there is an admin, insert default admin if empty
-    $checkAdmin = mysqli_query($conn, "SELECT id FROM admin_users LIMIT 1");
+    $checkAdmin = mysqli_query($conn, "SELECT id, password FROM admin_users LIMIT 1");
     if (mysqli_num_rows($checkAdmin) == 0) {
-        mysqli_query($conn, "INSERT INTO admin_users (username, password) VALUES ('admin', 'admin123')");
+        $hash = password_hash('admin123', PASSWORD_BCRYPT);
+        mysqli_query($conn, "INSERT INTO admin_users (username, password) VALUES ('admin', '$hash')");
+    } else {
+        // Upgrade existing plaintext password if any
+        $adminRow = mysqli_fetch_assoc($checkAdmin);
+        if (substr($adminRow['password'], 0, 3) !== '$2y' && substr($adminRow['password'], 0, 3) !== '$2a') {
+            $newHash = password_hash($adminRow['password'], PASSWORD_BCRYPT);
+            mysqli_query($conn, "UPDATE admin_users SET password = '$newHash' WHERE id = " . $adminRow['id']);
+        }
     }
 }
 
@@ -87,6 +95,19 @@ $tableFilesQuery = "
 ";
 if (!mysqli_query($conn, $tableFilesQuery)) {
     echo json_encode(['success' => false, 'message' => 'Failed to create files table: ' . mysqli_error($conn)]);
+    exit;
+}
+
+// 7. Buat tabel login_attempts jika belum ada (Rate Limiting)
+$tableAttemptsQuery = "
+    CREATE TABLE IF NOT EXISTS login_attempts (
+        ip_address VARCHAR(45) PRIMARY KEY,
+        attempts INT DEFAULT 1,
+        last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+";
+if (!mysqli_query($conn, $tableAttemptsQuery)) {
+    echo json_encode(['success' => false, 'message' => 'Failed to create login_attempts table: ' . mysqli_error($conn)]);
     exit;
 }
 ?>

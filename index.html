@@ -66,6 +66,26 @@
     .customer-card .role-icon { font-size: 2.8rem; margin-bottom: .75rem; display: block; }
     .customer-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .4rem; }
     .customer-card p  { font-size: .85rem; color: var(--muted); }
+    /* WHATSAPP FLOAT BUTTON */
+    .wa-float-btn {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 999;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: #25d366; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+      cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: none; outline: none;
+      text-decoration: none;
+    }
+    .wa-float-btn:hover {
+      transform: scale(1.1) translateY(-4px);
+      box-shadow: 0 8px 24px rgba(37, 211, 102, 0.45);
+      background: #20ba5a;
+      color: #fff;
+    }
+    .wa-float-btn:active {
+      transform: scale(0.95);
+    }
   </style>
 </head>
 <body>
@@ -98,12 +118,30 @@
   </div>
 </div>
 
+<!-- WHATSAPP FLOAT BUTTON -->
+<a class="wa-float-btn" id="wa-float-btn" href="#" target="_blank" title="Hubungi Kami via WhatsApp" style="display: none;">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
 <script src="assets/shared.js"></script>
 <script>
   // Set logo from shared constant
   document.getElementById('landing-logo').src = 'assets/logo.png';
   // Bersihkan state lama kalau user mulai dari awal
   clearState();
+
+  // Load WhatsApp number dynamically from settings
+  fetch('api/settings.php')
+    .then(r => r.json())
+    .then(res => {
+      if (res.success && res.data && res.data.wa_number) {
+        const waNumber = res.data.wa_number;
+        const btn = document.getElementById('wa-float-btn');
+        btn.href = `https://wa.me/${waNumber}?text=Halo%20UD.%20Master%2C%20saya%20ingin%20bertanya%20mengenai%20layanan%20cetak...`;
+        btn.style.display = 'flex';
+      }
+    })
+    .catch(e => console.error('Gagal mengambil pengaturan WA float button:', e));
 </script>
 </body>
 </html>

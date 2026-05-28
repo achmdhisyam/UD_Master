@@ -12,38 +12,43 @@ if (!$data) {
 }
 
 // Extract fields
-$nama = mysqli_real_escape_string($conn, $data['nama'] ?? '');
-$layanan = mysqli_real_escape_string($conn, $data['layanan'] ?? '');
-$warna = mysqli_real_escape_string($conn, isset($data['warna']) ? implode(",", $data['warna']) : '');
+$nama = $data['nama'] ?? '';
+$layanan = $data['layanan'] ?? '';
+$warna = isset($data['warna']) && is_array($data['warna']) ? implode(",", $data['warna']) : '';
 $jumlah = (int)($data['qty'] ?? 0);
-$kertas = mysqli_real_escape_string($conn, $data['kertas'] ?? '');
-$ukuran = mysqli_real_escape_string($conn, $data['ukuran'] ?? '');
-$pengiriman = mysqli_real_escape_string($conn, $data['pengiriman'] ?? '');
-$alamat = mysqli_real_escape_string($conn, $data['alamat'] ?? '');
-$catatan = mysqli_real_escape_string($conn, $data['catatan'] ?? '');
-$wa = mysqli_real_escape_string($conn, $data['wa'] ?? '');
-$bayar = mysqli_real_escape_string($conn, $data['bayar'] ?? '');
+$kertas = $data['kertas'] ?? '';
+$ukuran = $data['ukuran'] ?? '';
+$pengiriman = $data['pengiriman'] ?? '';
+$alamat = $data['alamat'] ?? '';
+$catatan = $data['catatan'] ?? '';
+$wa = $data['wa'] ?? '';
+$bayar = $data['bayar'] ?? '';
 $harga = (float)($data['harga'] ?? 0);
 $status = 'menunggu';
-$bukti_bayar = mysqli_real_escape_string($conn, $data['bukti_bayar'] ?? '');
+$bukti_bayar = $data['bukti_bayar'] ?? '';
 
-$query = "INSERT INTO pesanan (nama, layanan, warna, jumlah, kertas, ukuran, pengiriman, alamat, catatan, wa, bayar, harga, bukti_bayar, status) 
-          VALUES ('$nama', '$layanan', '$warna', '$jumlah', '$kertas', '$ukuran', '$pengiriman', '$alamat', '$catatan', '$wa', '$bayar', '$harga', '$bukti_bayar', '$status')";
+// Prepared Statement untuk pesanan
+$stmt = mysqli_prepare($conn, "INSERT INTO pesanan (nama, layanan, warna, jumlah, kertas, ukuran, pengiriman, alamat, catatan, wa, bayar, harga, bukti_bayar, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt, "sssisssssssdss", $nama, $layanan, $warna, $jumlah, $kertas, $ukuran, $pengiriman, $alamat, $catatan, $wa, $bayar, $harga, $bukti_bayar, $status);
 
-if (mysqli_query($conn, $query)) {
+if (mysqli_stmt_execute($stmt)) {
     $id = mysqli_insert_id($conn);
+    mysqli_stmt_close($stmt);
     
-    // Process files if any
+    // Process files if any (Prepared Statement)
     if (isset($data['serverFiles']) && is_array($data['serverFiles'])) {
+        $fileStmt = mysqli_prepare($conn, "INSERT INTO files (pesanan_id, nama_file, path_file) VALUES (?, ?, ?)");
         foreach ($data['serverFiles'] as $fileInfo) {
-            $nama_file = mysqli_real_escape_string($conn, $fileInfo['saved_name']);
-            $path = mysqli_real_escape_string($conn, "uploads/" . $fileInfo['saved_name']); // stored relative to root
-            
-            mysqli_query($conn, "INSERT INTO files (pesanan_id, nama_file, path_file) VALUES ('$id', '$nama_file', '$path')");
+            $nama_file = $fileInfo['saved_name'];
+            $path = "uploads/" . $fileInfo['saved_name']; // stored relative to root
+            mysqli_stmt_bind_param($fileStmt, "iss", $id, $nama_file, $path);
+            mysqli_stmt_execute($fileStmt);
         }
+        mysqli_stmt_close($fileStmt);
     }
     
     echo json_encode(['success' => true, 'antrian' => $id]);
 } else {
     echo json_encode(['success' => false, 'message' => mysqli_error($conn)]);
 }
+?>

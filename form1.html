@@ -144,6 +144,17 @@
             <span class="upload-hint">PDF, Word, Excel, CSV, JPG, PNG — maks. 20 MB</span>
           </div>
           <div id="file-list"></div>
+          
+          <!-- Progress Bar Wrapper (C2) -->
+          <div id="upload-progress-container" style="display:none; margin-top: 1rem; background: var(--cream); border-radius: 12px; padding: 1rem; border: 1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:var(--ink); margin-bottom:0.4rem;">
+              <span id="upload-progress-label"><i class="fa-solid fa-spinner fa-spin"></i> Mengunggah Berkas...</span>
+              <span id="upload-progress-text">0%</span>
+            </div>
+            <div style="width:100%; height:8px; background:rgba(0,0,0,0.06); border-radius:999px; overflow:hidden;">
+              <div id="upload-progress-bar" style="width:0%; height:100%; background:var(--accent); transition:width 0.1s ease; border-radius:999px;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Jumlah Lembar -->
@@ -536,23 +547,65 @@
           const fd = new FormData();
           newFiles.forEach(f => fd.append('file[]', f));
 
+          // Promise wrapper untuk upload menggunakan XMLHttpRequest agar bisa memantau progres (C2)
+          const uploadPromise = () => new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'api/upload_temp.php', true);
+
+            const progContainer = document.getElementById('upload-progress-container');
+            const progBar = document.getElementById('upload-progress-bar');
+            const progText = document.getElementById('upload-progress-text');
+
+            progContainer.style.display = 'block';
+            progBar.style.width = '0%';
+            progText.textContent = '0%';
+
+            xhr.upload.onprogress = function(e) {
+              if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progBar.style.width = percent + '%';
+                progText.textContent = percent + '%';
+              }
+            };
+
+            xhr.onload = function() {
+              progContainer.style.display = 'none';
+              if (xhr.status === 200) {
+                try {
+                  const response = JSON.parse(xhr.responseText);
+                  resolve(response);
+                } catch (e) {
+                  reject(new Error('Format respon server tidak valid.'));
+                }
+              } else {
+                reject(new Error('Gagal mengunggah, status server: ' + xhr.status));
+              }
+            };
+
+            xhr.onerror = function() {
+              progContainer.style.display = 'none';
+              reject(new Error('Terjadi kesalahan jaringan saat mengunggah berkas.'));
+            };
+
+            xhr.send(fd);
+          });
+
           try {
-            const res = await fetch('api/upload_temp.php', { method: 'POST', body: fd });
-            const json = await res.json();
+            const json = await uploadPromise();
             if (json.success) {
               serverFiles = json.files;
-              // Tandai semua berkas yang baru diunggah sebagai _restored agar tidak diunggah ulang
+              // Tandai berkas yang baru diunggah agar tidak diunggah ulang
               uploadedFiles.forEach(f => {
                 f._restored = true;
               });
             } else {
-              Swal.fire('Gagal', 'Gagal mengunggah file.', 'error');
+              Swal.fire('Gagal', json.message || 'Gagal mengunggah file.', 'error');
               btn.textContent = oriText;
               btn.disabled = false;
               return;
             }
           } catch (e) {
-            Swal.fire('Error', 'Terjadi kesalahan saat mengunggah.', 'error');
+            Swal.fire('Error', e.message || 'Terjadi kesalahan saat mengunggah.', 'error');
             btn.textContent = oriText;
             btn.disabled = false;
             return;
