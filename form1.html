@@ -11,6 +11,10 @@
   <link rel="stylesheet" href="assets/shared.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Client-side Office files preview libraries -->
+  <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+  <script src="https://unpkg.com/docx-preview@0.1.15/dist/docx-preview.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     body {
       display: flex;
@@ -33,7 +37,7 @@
   <!-- HEADER -->
   <header class="form-header">
     <div class="header-left">
-      <img class="header-logo" id="hdr-logo" src="assets/Logo.png" alt="" />
+      <img class="header-logo" id="hdr-logo" src="assets/logo.png" alt="" />
       <div class="brand">UD<span>Master</span></div>
     </div>
     <div class="step-indicator">
@@ -134,10 +138,10 @@
           <label>Upload File Dokumen *</label>
           <div class="upload-area" id="upload-area" ondragover="event.preventDefault(); this.classList.add('dragover')"
             ondragleave="this.classList.remove('dragover')" ondrop="handleDrop(event)">
-            <input type="file" name="file[]" id="inp-file" multiple onchange="handleFileChange(event)">
+            <input type="file" name="file[]" id="inp-file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.gif,.bmp,.webp" onchange="handleFileChange(event)">
             <span class="upload-icon" style="color:var(--accent);"><i class="fa-solid fa-cloud-arrow-up"></i></span>
             <span class="upload-label">Ketuk untuk pilih file</span>
-            <span class="upload-hint">PDF, Word, Excel, PPT, JPG, PNG — maks. 20 MB</span>
+            <span class="upload-hint">PDF, Word, Excel, CSV, JPG, PNG — maks. 20 MB</span>
           </div>
           <div id="file-list"></div>
         </div>
@@ -147,8 +151,10 @@
           <label id="qty-label">Jumlah Lembar * <span id="qty-min-badge"
               style="color:var(--accent);font-size:.75rem;"></span></label>
           <div class="qty-control">
-          <input type="number" class="qty-input" id="qty-display" value="1" min="1" style="width:100%;text-align:center;" oninput="onQtyInput(this)" onblur="onQtyBlur(this)" />
-        </div>
+            <button type="button" class="qty-btn" onclick="changeQty(-500)">-</button>
+            <input type="number" class="qty-input" id="qty-display" value="1" min="1" style="width:100%;text-align:center;" oninput="onQtyInput(this)" onblur="onQtyBlur(this)" />
+            <button type="button" class="qty-btn" onclick="changeQty(500)">+</button>
+          </div>
           <p class="qty-min-note" id="qty-note"></p>
           <div class="qty-below-min-warn" id="qty-below-warn">
             <i class="fa-solid fa-triangle-exclamation"></i> Quantity di bawah minimal order. Anda tetap akan dikenakan
@@ -162,6 +168,17 @@
           <textarea name="catatan" id="inp-catatan" placeholder="Tambahkan catatan jika ada"></textarea>
         </div>
 
+        <!-- Price Estimation Box -->
+        <div class="price-estimate-box" id="price-estimate-box">
+          <div class="psb-content">
+            <div class="psb-info">
+              <span class="psb-label">Estimasi Harga</span>
+              <span class="psb-val" id="psb-val">Rp 0</span>
+            </div>
+            <div class="psb-detail" id="psb-detail">Ambil Sendiri</div>
+          </div>
+        </div>
+
         <!-- Nav -->
         <button type="button" class="btn-back" onclick="window.location.href='index.html'">← Kembali</button>
         <button type="button" class="btn-next" onclick="lanjut()">Lanjut →</button>
@@ -173,7 +190,7 @@
   <script src="assets/shared.js"></script>
   <script>
     // ── Logo ──
-    document.getElementById('hdr-logo');
+    document.getElementById('hdr-logo').src = 'assets/logo.png';
 
     // ── State ──
     let qty = 1;
@@ -202,6 +219,7 @@
       }
       updateQtyNote();
       renderStepIndicator(1);
+      checkMinQty();
     })();
 
     // ── Dot step-2 visibility ──
@@ -223,10 +241,6 @@
       return Array.from(document.querySelectorAll('input[name="warna[]"]:checked')).map(c => c.value);
     }
 
-    function getMinQty() {
-      return 1;
-    }
-
     function onLayananChange(layanan) {
       const isOffset = layanan === 'Offset (Cetak / Print)';
       document.getElementById('field-warna').style.display = isOffset ? 'block' : 'none';
@@ -240,6 +254,7 @@
       updateQtyNote();
       setState({ layanan });
       renderStepIndicator(1);
+      checkMinQty();
     }
 
     function updateQtyNote() {
@@ -262,16 +277,39 @@
     function changeQty(d) {
       qty = Math.max(getMinQty(), qty + d);
       document.getElementById('qty-display').value = qty;
+      checkMinQty();
     }
     function onQtyInput(el) {
       const v = parseInt(el.value, 10);
-      if (!isNaN(v) && v >= 1) qty = v;
+      if (!isNaN(v) && v >= 1) {
+        qty = v;
+        checkMinQty();
+      }
     }
     function onQtyBlur(el) {
       const min = getMinQty();
       const v = parseInt(el.value, 10);
       qty = (isNaN(v) || v < min) ? min : v;
       el.value = qty;
+      checkMinQty();
+    }
+
+    function checkMinQty() {
+      const layanan = getSelectedLayanan();
+      const warnEl = document.getElementById('qty-below-warn');
+      if (!warnEl) return;
+      
+      let belowMin = false;
+      if (layanan === 'Offset (Cetak / Print)') {
+        belowMin = (qty < 2500);
+      } else if (layanan === 'Pound (Potong)') {
+        belowMin = (qty < 3500);
+      }
+      
+      warnEl.style.display = belowMin ? 'flex' : 'none';
+      if (typeof updateLiveEstimate === 'function') {
+        updateLiveEstimate();
+      }
     }
 
     // ── FILES ──
@@ -289,9 +327,20 @@
       if (b < 1024) return b + ' B';
       if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
       return (b / 1048576).toFixed(1) + ' MB';
-    }
+    }    
+    const ALLOWED_EXTS = ['pdf','doc','docx','xls','xlsx','csv','jpg','jpeg','png','gif','bmp','webp'];
     function addFiles(list) {
       Array.from(list).forEach(f => {
+        const ext = f.name.split('.').pop().toLowerCase();
+        if (!ALLOWED_EXTS.includes(ext)) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Format Tidak Didukung',
+            html: `<b>${f.name}</b><br>Format <strong>.${ext.toUpperCase()}</strong> tidak dapat dicetak dan tidak diizinkan.<br><small style="color:#7a7060">Format yang diterima: PDF, Word, Excel, CSV, JPG, PNG</small>`,
+            confirmButtonColor: '#e05c2a'
+          });
+          return;
+        }
         if (f.size > 20971520) { Swal.fire('Terlalu Besar', f.name + ' melebihi batas 20MB, dilewati.', 'warning'); return; }
         if (!uploadedFiles.find(u => u.name === f.name && u.size === f.size)) uploadedFiles.push(f);
       });
@@ -299,19 +348,118 @@
     }
     function renderFileList() {
       const el = document.getElementById('file-list');
-      el.innerHTML = uploadedFiles.map((f, i) => `
-      <div class="file-item">
-        <span class="file-item-icon">${getFileIcon(f.name)}</span>
-        <div class="file-item-info">
-          <div class="file-item-name">${f.name}</div>
-          <div class="file-item-size">${formatSize(f.size)}</div>
-        </div>
-        <button class="file-item-remove" onclick="removeFile(${i})">✕</button>
-      </div>`).join('');
+      el.innerHTML = '';
+      
+      uploadedFiles.forEach((f, i) => {
+        const card = document.createElement('div');
+        
+        const ext = f.name.split('.').pop().toLowerCase();
+        const isImg = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
+        const isPdf = ext === 'pdf';
+        
+        if (isImg || isPdf) {
+          card.className = 'file-item-card-premium';
+          card.innerHTML = `
+            <div class="file-item-card-preview-wrap">
+              ${isImg ? `<img id="img-preview-${i}" src="" alt="" />` : `<iframe id="pdf-preview-${i}" src="" style="width:100%; height:100%; border:none; pointer-events:none;" scrolling="no"></iframe>`}
+            </div>
+            <div class="file-item-card-info">
+              <div class="file-item-card-name" title="${f.name}">${f.name}</div>
+              <div class="file-item-card-size">${f.size ? formatSize(f.size) : 'Berkas diunggah'}</div>
+              <button type="button" class="btn-preview-trigger" onclick="openPreviewModal(${i})">
+                <i class="fa-solid fa-eye"></i> Lihat Berkas
+              </button>
+            </div>
+            <button class="file-item-card-remove" onclick="removeFile(${i})">✕</button>
+          `;
+          
+          if (f instanceof File) {
+            if (isImg) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                const imgEl = card.querySelector(`#img-preview-${i}`);
+                if (imgEl) imgEl.src = e.target.result;
+              };
+              reader.readAsDataURL(f);
+            } else {
+              const url = URL.createObjectURL(f);
+              const iframeEl = card.querySelector(`#pdf-preview-${i}`);
+              if (iframeEl) iframeEl.src = url;
+            }
+          } else if (f._restored) {
+            const sState = getState();
+            const serverFile = sState.serverFiles && sState.serverFiles.find(sf => sf.original_name === f.name);
+            const path = serverFile ? 'uploads/' + serverFile.saved_name : '';
+            if (path) {
+              if (isImg) {
+                const imgEl = card.querySelector(`#img-preview-${i}`);
+                if (imgEl) imgEl.src = path;
+              } else {
+                const iframeEl = card.querySelector(`#pdf-preview-${i}`);
+                if (iframeEl) iframeEl.src = path;
+              }
+            }
+          }
+        } else {
+          // Non-image, non-PDF: show clean styled icon preview card
+          card.className = 'file-item-card-premium';
+          card.innerHTML = `
+            <div class="file-item-card-preview-wrap ext-${ext}" style="display:flex; align-items:center; justify-content:center;">
+              <div class="file-item-card-preview ext-${ext}" style="border:none; background:transparent; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                ${getFileIcon(f.name)}
+              </div>
+            </div>
+            <div class="file-item-card-info">
+              <div class="file-item-card-name" title="${f.name}">${f.name}</div>
+              <div class="file-item-card-size">${f.size ? formatSize(f.size) : 'Berkas diunggah'}</div>
+              <button type="button" class="btn-preview-trigger" onclick="openPreviewModal(${i})">
+                <i class="fa-solid fa-eye"></i> Lihat Berkas
+              </button>
+            </div>
+            <button class="file-item-card-remove" onclick="removeFile(${i})">✕</button>
+          `;
+        }
+        
+        el.appendChild(card);
+      });
+
+      const uploadArea = document.getElementById('upload-area');
+      if (uploadArea) {
+        uploadArea.style.display = (uploadedFiles.length > 0) ? 'none' : 'block';
+      }
     }
-    function removeFile(i) { uploadedFiles.splice(i, 1); renderFileList(); }
+    function removeFile(i) { uploadedFiles.splice(i, 1); renderFileList(); if (typeof updateLiveEstimate === 'function') updateLiveEstimate(); }
     function handleFileChange(e) { addFiles(e.target.files); e.target.value = ''; }
     function handleDrop(e) { e.preventDefault(); document.getElementById('upload-area').classList.remove('dragover'); addFiles(e.dataTransfer.files); }
+
+    function updateLiveEstimate() {
+      const layanan = getSelectedLayanan();
+      const psb = document.getElementById('price-estimate-box');
+      if (!layanan) {
+        if (psb) psb.classList.remove('show');
+        return;
+      }
+      
+      const warna = getSelectedWarna();
+      const price = calcPrice(layanan, qty, warna);
+      
+      document.getElementById('psb-val').textContent = formatRp(price);
+      
+      let detailText = '';
+      if (layanan === 'Offset (Cetak / Print)') {
+        detailText = `Offset — ${warna.length} warna, ${qty.toLocaleString('id-ID')} lbr`;
+      } else {
+        detailText = `Pound — ${qty.toLocaleString('id-ID')} lbr`;
+      }
+      document.getElementById('psb-detail').textContent = detailText;
+      
+      if (psb) psb.classList.add('show');
+    }
+
+    // Bind checkbox change events for live estimation
+    document.querySelectorAll('input[name="warna[]"]').forEach(cb => {
+      cb.addEventListener('change', updateLiveEstimate);
+    });
 
     // ── SHAKE ──
     function shake(id) {
@@ -335,6 +483,12 @@
 
       if (!wa) {
         Swal.fire('Perhatian', 'Mohon isi No. WhatsApp Anda terlebih dahulu.', 'warning');
+        return shake('inp-wa');
+      }
+
+      const waPattern = /^(08|628)[0-9]{7,12}$/;
+      if (!waPattern.test(wa)) {
+        Swal.fire('Perhatian', 'Format nomor WhatsApp tidak valid. Gunakan format Indonesia yang dimulai dengan 08... atau 628...', 'warning');
         return shake('inp-wa');
       }
 
@@ -387,6 +541,10 @@
             const json = await res.json();
             if (json.success) {
               serverFiles = json.files;
+              // Tandai semua berkas yang baru diunggah sebagai _restored agar tidak diunggah ulang
+              uploadedFiles.forEach(f => {
+                f._restored = true;
+              });
             } else {
               Swal.fire('Gagal', 'Gagal mengunggah file.', 'error');
               btn.textContent = oriText;
@@ -424,7 +582,226 @@
         window.location.href = 'form2.html';
       }
     }
+
+    async function openPreviewModal(index) {
+      const f = uploadedFiles[index];
+      if (!f) return;
+      
+      const modal = document.getElementById('preview-modal');
+      const titleEl = document.getElementById('preview-modal-title');
+      const bodyEl = document.getElementById('preview-modal-body');
+      
+      titleEl.textContent = f.name;
+      bodyEl.innerHTML = '<div style="font-size:0.9rem; color:var(--muted);"><i class="fa-solid fa-spinner fa-spin"></i> Memuat pratinjau...</div>';
+      
+      const ext = f.name.split('.').pop().toLowerCase();
+      const isImg = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
+      const isPdf = ext === 'pdf';
+      const isCsv = ext === 'csv';
+      const isDocx = ['doc', 'docx'].includes(ext);
+      const isXlsx = ['xls', 'xlsx'].includes(ext);
+      
+      modal.classList.add('show');
+      
+      const setModalContent = (srcUrl) => {
+        if (isImg) {
+          bodyEl.innerHTML = `<img src="${srcUrl}" alt="${f.name}" />`;
+        } else if (isPdf) {
+          bodyEl.innerHTML = `<iframe src="${srcUrl}" frameborder="0"></iframe>`;
+        }
+      };
+      
+      const renderCsvTable = (text) => {
+        const rows = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        if (rows.length === 0) {
+          bodyEl.innerHTML = '<div style="color:var(--muted); padding: 2rem;">Berkas CSV ini kosong.</div>';
+          return;
+        }
+        let html = '<div style="width:100%; max-height:55vh; overflow:auto; border:1px solid var(--border); border-radius:8px; background:#fff;"><table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.82rem; font-family:monospace;">';
+        
+        rows.slice(0, 100).forEach((rowText, rIdx) => {
+          let cols = rowText.includes(';') ? rowText.split(';') : rowText.split(',');
+          html += `<tr style="${rIdx === 0 ? 'position:sticky; top:0; z-index:1;' : ''}">`;
+          cols.forEach(col => {
+            const tag = rIdx === 0 ? 'th' : 'td';
+            const cleanText = col.trim().replace(/^["']|["']$/g, '');
+            const cellStyle = rIdx === 0
+              ? 'background:var(--cream); color:var(--ink); font-weight:800; padding:0.6rem 0.8rem; border-bottom:2px solid var(--border); border-right:1px solid var(--border);'
+              : 'padding:0.5rem 0.8rem; border-bottom:1px solid rgba(0,0,0,0.06); border-right:1px solid rgba(0,0,0,0.06); color:var(--ink);';
+            html += `<${tag} style="${cellStyle}">${cleanText}</${tag}>`;
+          });
+          html += '</tr>';
+        });
+        
+        html += '</table></div>';
+        if (rows.length > 100) {
+          html += `<div style="font-size:0.75rem; color:var(--muted); text-align:center; margin-top:0.6rem; font-weight:600;"><i class="fa-solid fa-circle-info"></i> Menampilkan 100 baris pertama dari total ${rows.length} baris.</div>`;
+        }
+        bodyEl.innerHTML = html;
+      };
+      
+      const getFileBuf = (file) => new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = e => res(e.target.result);
+        r.onerror = rej;
+        r.readAsArrayBuffer(file);
+      });
+
+      const fetchBuf = async (path) => {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('Gagal mengunduh berkas dari server.');
+        return res.arrayBuffer();
+      };
+
+      const getBuf = async () => {
+        if (f instanceof File) return getFileBuf(f);
+        const sState = getState();
+        const sf = sState.serverFiles && sState.serverFiles.find(s => s.original_name === f.name);
+        if (sf) return fetchBuf('uploads/' + sf.saved_name);
+        throw new Error('Berkas tidak ditemukan di server.');
+      };
+
+      const renderDocx = async (buf) => {
+        bodyEl.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'width:100%; height:55vh; overflow:auto; background:#fff; border-radius:8px; border:1px solid var(--border); padding:1rem; box-sizing:border-box;';
+        bodyEl.appendChild(wrapper);
+        await docx.renderAsync(buf, wrapper, null, {
+          className: 'docx-render', inWrapper: true, ignoreWidth: false,
+          breakPages: true, renderHeaders: true, renderFooters: true
+        });
+      };
+
+      const renderXlsx = (buf) => {
+        const wb = XLSX.read(buf, { type: 'array' });
+        const names = wb.SheetNames;
+
+        const buildSheet = (idx) => {
+          const data = XLSX.utils.sheet_to_json(wb.Sheets[names[idx]], { header: 1, defval: '' });
+          let t = '<div style="overflow:auto; max-height:calc(55vh - 56px); border:1px solid var(--border); border-radius:8px;"><table style="width:100%; border-collapse:collapse; font-size:0.8rem;">';
+          data.slice(0, 150).forEach((row, ri) => {
+            t += '<tr>';
+            row.forEach(cell => {
+              const tag = ri === 0 ? 'th' : 'td';
+              const s = ri === 0
+                ? 'background:var(--cream);font-weight:800;padding:0.5rem 0.75rem;border-bottom:2px solid var(--border);border-right:1px solid var(--border);white-space:nowrap;'
+                : 'padding:0.45rem 0.75rem;border-bottom:1px solid rgba(0,0,0,.06);border-right:1px solid rgba(0,0,0,.06);white-space:nowrap;';
+              t += `<${tag} style="${s}">${cell ?? ''}</${tag}>`;
+            });
+            t += '</tr>';
+          });
+          t += '</table></div>';
+          if (data.length > 150) t += `<div style="font-size:0.72rem;color:var(--muted);text-align:center;margin-top:0.4rem;"><i class="fa-solid fa-circle-info"></i> Menampilkan 150 dari ${data.length} baris</div>`;
+          return t;
+        };
+
+        const tabs = names.length > 1
+          ? `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.6rem;">` +
+            names.map((n, i) => `<button id="xtab-${i}" onclick="window._xswitch(${i})" style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.75rem;font-weight:700;padding:0.3rem 0.7rem;border-radius:20px;border:2px solid var(--border);cursor:pointer;background:${i===0?'var(--ink)':'var(--white)'};color:${i===0?'var(--paper)':'var(--ink)'};">${n}</button>`).join('') +
+            `</div>`
+          : '';
+
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'width:100%;height:55vh;';
+        wrap.innerHTML = tabs + buildSheet(0);
+        bodyEl.innerHTML = '';
+        bodyEl.appendChild(wrap);
+
+        if (names.length > 1) {
+          window._xswitch = (idx) => {
+            wrap.innerHTML = tabs + buildSheet(idx);
+            names.forEach((_, i) => {
+              const btn = document.getElementById(`xtab-${i}`);
+              if (btn) { btn.style.background = i === idx ? 'var(--ink)' : 'var(--white)'; btn.style.color = i === idx ? 'var(--paper)' : 'var(--ink)'; }
+            });
+          };
+        }
+      };
+
+      if (isImg || isPdf) {
+        if (f instanceof File) {
+          setModalContent(URL.createObjectURL(f));
+        } else if (f._restored) {
+          const sState = getState();
+          const sf = sState.serverFiles && sState.serverFiles.find(s => s.original_name === f.name);
+          const path = sf ? 'uploads/' + sf.saved_name : '';
+          path ? setModalContent(path) : (bodyEl.innerHTML = '<div style="color:var(--accent);">Gagal memuat pratinjau file server.</div>');
+        }
+      } else if (isCsv) {
+        if (f instanceof File) {
+          const r = new FileReader();
+          r.onload = e => renderCsvTable(e.target.result);
+          r.readAsText(f);
+        } else {
+          const sState = getState();
+          const sf = sState.serverFiles && sState.serverFiles.find(s => s.original_name === f.name);
+          if (sf) fetch('uploads/' + sf.saved_name).then(r => r.text()).then(renderCsvTable)
+            .catch(() => { bodyEl.innerHTML = '<div style="color:var(--accent);">Gagal mengunduh CSV dari server.</div>'; });
+        }
+      } else if (isDocx) {
+        getBuf().then(renderDocx).catch(err => {
+          bodyEl.innerHTML = `<div style="padding:2rem;color:var(--accent);text-align:center;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:0.8rem;"></i>Gagal merender dokumen Word.<br><small style="color:var(--muted)">${err.message}</small></div>`;
+        });
+      } else if (isXlsx) {
+        getBuf().then(buf => renderXlsx(buf)).catch(err => {
+          bodyEl.innerHTML = `<div style="padding:2rem;color:var(--accent);text-align:center;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:0.8rem;"></i>Gagal merender spreadsheet.<br><small style="color:var(--muted)">${err.message}</small></div>`;
+        });
+      } else {
+        // Fallback — PowerPoint & unsupported formats
+        const isPpt = ['ppt', 'pptx'].includes(ext);
+        bodyEl.innerHTML = `
+          <div class="preview-doc-card">
+            <i class="fa-solid ${isPpt ? 'fa-file-powerpoint' : 'fa-file-lines'}" style="color:${isPpt ? 'var(--accent)' : 'var(--muted)'}"></i>
+            <div class="doc-title">${f.name}</div>
+            <div class="doc-meta">${isPpt ? 'PowerPoint Presentation' : 'Berkas Dokumen'} • ${f.size ? formatSize(f.size) : 'Siap Cetak'}</div>
+            <div style="font-size:0.8rem;color:var(--muted);line-height:1.5;margin-bottom:1.5rem;text-align:center;padding:0 0.5rem;">
+              Format <strong>${ext.toUpperCase()}</strong> belum didukung pratinjau langsung di browser. Berkas telah tersimpan dan siap dicetak.
+            </div>
+            <div class="doc-badge"><i class="fa-solid fa-circle-check"></i> Berkas Terverifikasi & Siap Cetak</div>
+          </div>`;
+      }
+    }
+    
+    function closePreviewModal() {
+      const modal = document.getElementById('preview-modal');
+      modal.classList.remove('show');
+      const bodyEl = document.getElementById('preview-modal-body');
+      const iframe = bodyEl.querySelector('iframe');
+      if (iframe && iframe.src.startsWith('blob:')) {
+        URL.revokeObjectURL(iframe.src);
+      }
+      const img = bodyEl.querySelector('img');
+      if (img && img.src.startsWith('blob:')) {
+        URL.revokeObjectURL(img.src);
+      }
+      bodyEl.innerHTML = '';
+    }
+    
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('preview-modal');
+      if (e.target === modal) {
+        closePreviewModal();
+      }
+    });
+
+    // Trigger initial calculation
+    updateLiveEstimate();
   </script>
+
+  <!-- Modal Pratinjau Premium -->
+  <div id="preview-modal" class="preview-modal">
+    <div class="preview-modal-content">
+      <div class="preview-modal-header">
+        <div id="preview-modal-title" class="preview-modal-title">Pratinjau Berkas</div>
+        <button class="preview-modal-close" onclick="closePreviewModal()">✕</button>
+      </div>
+      <div id="preview-modal-body" class="preview-modal-body">
+        <!-- Konten pratinjau dinamis akan dimasukkan di sini -->
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
+

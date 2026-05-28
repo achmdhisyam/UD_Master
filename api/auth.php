@@ -1,27 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = mysqli_connect("localhost", "root", "", "ud_master");
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
-
-// Ensure admin_users table exists
-$tableCheck = mysqli_query($conn, "SHOW TABLES LIKE 'admin_users'");
-if (mysqli_num_rows($tableCheck) == 0) {
-    $createTable = "
-        CREATE TABLE admin_users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL
-        )
-    ";
-    mysqli_query($conn, $createTable);
-    
-    // Insert default admin
-    mysqli_query($conn, "INSERT INTO admin_users (username, password) VALUES ('admin', 'admin123')");
-}
+require_once 'db.php';
 
 $input = json_decode(file_get_contents('php://input'), true);
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($input['action']) ? $input['action'] : '');

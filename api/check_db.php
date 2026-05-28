@@ -1,6 +1,6 @@
 <?php
-$c = mysqli_connect('localhost', 'root', '', 'ud_master');
-if (!$c) die('Connection failed');
+require_once 'db.php';
+$c = $conn;
 $res = mysqli_query($c, 'DESCRIBE pesanan');
 if ($res) {
     while ($row = mysqli_fetch_assoc($res)) {

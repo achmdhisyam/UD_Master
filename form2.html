@@ -209,6 +209,17 @@
     </div>
   </div>
 
+  <!-- Price Estimation Box -->
+  <div class="price-estimate-box" id="price-estimate-box">
+    <div class="psb-content">
+      <div class="psb-info">
+        <span class="psb-label">Estimasi Harga</span>
+        <span class="psb-val" id="psb-val">Rp 0</span>
+      </div>
+      <div class="psb-detail" id="psb-detail">Ambil Sendiri</div>
+    </div>
+  </div>
+
   <!-- Nav -->
   <div class="form-nav">
     <button class="btn-back" onclick="window.location.href='form1.html'">← Kembali</button>
@@ -220,7 +231,7 @@
 
 <script src="assets/shared.js"></script>
 <script>
-  document.getElementById('hdr-logo').src = 'assets/Logo.png';
+  document.getElementById('hdr-logo').src = 'assets/logo.png';
 
   // Guard — kalau tidak ada state form1, kembali
   (function guard() {
@@ -263,6 +274,32 @@
     setState({ kertas: kertasEl.value, ukuran: ukuranEl.value });
     window.location.href = 'form_pengiriman.html';
   }
+
+  // ── LIVE ESTIMATE ──
+  function updateLiveEstimate() {
+    const s = getState();
+    const psb = document.getElementById('price-estimate-box');
+    if (!s.layanan) {
+      if (psb) psb.classList.remove('show');
+      return;
+    }
+    
+    const price = calcPrice(s.layanan, s.qty || 1, s.warna || []);
+    document.getElementById('psb-val').textContent = formatRp(price);
+    
+    let detailText = '';
+    if (s.layanan === 'Offset (Cetak / Print)') {
+      detailText = `Offset — ${(s.warna || []).length} warna, ${(s.qty || 1).toLocaleString('id-ID')} lbr`;
+    } else {
+      detailText = `Pound — ${(s.qty || 1).toLocaleString('id-ID')} lbr`;
+    }
+    document.getElementById('psb-detail').textContent = detailText;
+    
+    if (psb) psb.classList.add('show');
+  }
+
+  updateLiveEstimate();
 </script>
+
 </body>
 </html>

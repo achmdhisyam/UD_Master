@@ -66,7 +66,7 @@
   <!-- HEADER -->
   <header class="form-header">
     <div class="header-left">
-      <img class="header-logo" src="assets/Logo.png" alt="UD. Master Logo" id="hdr-logo" />
+      <img class="header-logo" src="assets/logo.png" alt="UD. Master Logo" id="hdr-logo" />
       <div class="brand" style="cursor:pointer;" onclick="window.location.href='index.html'">UD<span>Master</span></div>
     </div>
     <div style="color:var(--paper); font-size:0.85rem; font-weight:600; cursor:pointer;" onclick="window.location.href='index.html'">
@@ -171,6 +171,10 @@
               <td class="key">Alamat</td>
               <td class="val" id="res-alamat">—</td>
             </tr>
+            <tr id="row-bukti" style="display:none;">
+              <td class="key">Bukti Bayar</td>
+              <td class="val" id="res-bukti">—</td>
+            </tr>
             <tr>
               <td class="key">Metode Bayar</td>
               <td class="val" id="res-bayar">QRIS</td>
@@ -259,6 +263,13 @@
           document.getElementById('res-alamat').textContent = o.alamat || '—';
         } else {
           document.getElementById('row-alamat').style.display = 'none';
+        }
+
+        if (o.bukti_bayar) {
+          document.getElementById('row-bukti').style.display = 'table-row';
+          document.getElementById('res-bukti').innerHTML = `<a href="uploads/${o.bukti_bayar}" target="_blank" style="color:var(--accent2); text-decoration:none; font-weight:700;"><i class="fa-solid fa-file-image"></i> Lihat Bukti</a>`;
+        } else {
+          document.getElementById('row-bukti').style.display = 'none';
         }
 
         // Handle timeline status rendering

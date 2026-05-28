@@ -10,7 +10,51 @@
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0d0d0d; color: #f5f0e8; margin: 0; min-height: 100vh; }
+    body {
+      --bg: #0d0d0d;
+      --text: #f5f0e8;
+      --text-muted: rgba(245,240,232,0.5);
+      --text-muted-dark: rgba(245,240,232,0.4);
+      --card-bg: rgba(245,240,232,0.03);
+      --card-border: rgba(245,240,232,0.08);
+      --input-bg: rgba(245,240,232,0.08);
+      --input-border: rgba(245,240,232,0.15);
+      --topbar-bg: #0d0d0d;
+      --topbar-border: rgba(245,240,232,0.1);
+      --row-border: rgba(245,240,232,0.06);
+      --btn-border: rgba(245,240,232,0.2);
+      --btn-color: rgba(245,240,232,0.6);
+      --login-box-bg: rgba(245,240,232,.05);
+      --login-box-border: rgba(245,240,232,.12);
+      --modal-bg: #151515;
+      --overlay-bg: rgba(0, 0, 0, 0.85);
+
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.light-theme {
+      --bg: #f5f0e8;
+      --text: #0d0d0d;
+      --text-muted: rgba(13,13,13,0.6);
+      --text-muted-dark: rgba(13,13,13,0.5);
+      --card-bg: #ffffff;
+      --card-border: #ede8da;
+      --input-bg: #ffffff;
+      --input-border: #d4cfc0;
+      --topbar-bg: #ede8da;
+      --topbar-border: #d4cfc0;
+      --row-border: #ede8da;
+      --btn-border: #d4cfc0;
+      --btn-color: rgba(13,13,13,0.6);
+      --login-box-bg: #ffffff;
+      --login-box-border: #d4cfc0;
+      --modal-bg: #ffffff;
+      --overlay-bg: rgba(0, 0, 0, 0.4);
+    }
     h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans', sans-serif; }
     
     .screen { display: none; flex-direction: column; min-height: 100vh; }
@@ -19,14 +63,14 @@
     /* LOGIN */
     #screen-admin-login { align-items: center; justify-content: center; padding: 2rem; }
     .admin-login-box {
-      background: rgba(245,240,232,.05); border: 1px solid rgba(245,240,232,.12);
+      background: var(--login-box-bg); border: 1px solid var(--login-box-border);
       border-radius: 16px; padding: 2rem 1.5rem; width: 100%; max-width: 380px; text-align: center;
     }
     .admin-field { margin-bottom: 1.2rem; text-align: left; }
-    .admin-field label { display: block; font-size: .78rem; font-weight: 500; color: rgba(245,240,232,.5); margin-bottom: .45rem; letter-spacing: .05em; }
+    .admin-field label { display: block; font-size: .78rem; font-weight: 500; color: var(--text-muted); margin-bottom: .45rem; letter-spacing: .05em; }
     .admin-field input {
-      width: 100%; background: rgba(245,240,232,.08); border: 2px solid rgba(245,240,232,.15);
-      border-radius: 10px; padding: .85rem 1rem; color: #f5f0e8; outline: none; box-sizing: border-box;
+      width: 100%; background: var(--input-bg); border: 2px solid var(--input-border);
+      border-radius: 10px; padding: .85rem 1rem; color: var(--text); outline: none; box-sizing: border-box;
     }
     .btn-admin-login {
       width: 100%; background: #2a6ee0; color: #ffffff;
@@ -37,18 +81,19 @@
     
     /* DASHBOARD */
     .admin-topbar {
-      padding: 1rem 1.25rem; border-bottom: 1px solid rgba(245,240,232,.1);
-      display: flex; align-items: center; justify-content: space-between; background: #0d0d0d;
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--topbar-border);
+      display: flex; align-items: center; justify-content: space-between; background: var(--topbar-bg);
+      transition: background 0.3s, border-bottom 0.3s;
     }
     .admin-topbar .brand { font-size: 1.2rem; font-weight: 800; }
     .admin-topbar .brand span { color: #2a6ee0; }
-    .btn-logout { background: none; border: 1px solid rgba(245,240,232,.2); border-radius: 8px; padding: .5rem 1rem; color: rgba(245,240,232,.6); cursor: pointer; }
+    .btn-logout { background: none; border: 1px solid var(--btn-border); border-radius: 8px; padding: .5rem 1rem; color: var(--btn-color); cursor: pointer; transition: all 0.3s; }
     
     .admin-body { padding: 2rem; flex: 1; overflow-y: auto; }
     .table-header { margin-bottom: 1.5rem; }
     .orders-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    .orders-table th { text-align: left; padding: .8rem; font-size: .75rem; text-transform: uppercase; color: rgba(245,240,232,.4); border-bottom: 1px solid rgba(245,240,232,.1); }
-    .orders-table td { padding: 1rem .8rem; border-bottom: 1px solid rgba(245,240,232,.06); vertical-align: top; }
+    .orders-table th { text-align: left; padding: .8rem; font-size: .75rem; text-transform: uppercase; color: var(--text-muted-dark); border-bottom: 1px solid var(--topbar-border); }
+    .orders-table td { padding: 1rem .8rem; border-bottom: 1px solid var(--row-border); vertical-align: top; }
     
     .badge { display: inline-block; padding: .25rem .6rem; border-radius: 6px; font-size: .75rem; font-weight: 700; }
     .badge.offset { background: rgba(224,92,42,.15); color: #e05c2a; }
@@ -69,19 +114,26 @@
       .admin-body { padding: 1rem; }
       .orders-table, .orders-table tbody, .orders-table tr, .orders-table td { display: block; width: 100%; box-sizing: border-box; }
       .orders-table thead { display: none; }
-      .orders-table tr { border: 1px solid rgba(245,240,232,.1); margin-bottom: 1rem; border-radius: 8px; padding: 1rem; background: rgba(245,240,232,.02); }
-      .orders-table td { border-bottom: 1px solid rgba(245,240,232,.05); padding: 0.8rem 0; }
+      .orders-table tr { border: 1px solid var(--topbar-border); margin-bottom: 1rem; border-radius: 8px; padding: 1rem; background: var(--card-bg); }
+      .orders-table td { border-bottom: 1px solid var(--row-border); padding: 0.8rem 0; }
       .orders-table td:last-child { border-bottom: none; }
       
       /* Use nth-child to add labels on mobile */
-      .orders-table td:nth-child(1)::before { content: "ID / Antrian"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(2)::before { content: "Waktu"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(3)::before { content: "Pelanggan"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(4)::before { content: "Layanan & Detail"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(5)::before { content: "Pengiriman"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(6)::before { content: "Pembayaran"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(7)::before { content: "File Unggahan"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(8)::before { content: "Aksi Status"; display: block; font-size: 0.7rem; color: rgba(245,240,232,.5); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(1)::before { content: "ID / Antrian"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(2)::before { content: "Waktu"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(3)::before { content: "Pelanggan"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(4)::before { content: "Layanan & Detail"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(5)::before { content: "Pengiriman"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(6)::before { content: "Pembayaran"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(7)::before { content: "File Unggahan"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+      .orders-table td:nth-child(8)::before { content: "Aksi Status"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
+    }
+    /* Micro-interactions for theme switch */
+    .theme-switch button i {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .theme-switch button:hover i {
+      transform: rotate(360deg) scale(1.2);
     }
   </style>
 </head>
@@ -98,8 +150,8 @@
       <label>PASSWORD</label>
       <input type="password" id="admin-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()" />
     </div>
-    <button class="btn-admin-login" onclick="adminLogin()">Masuk →</button>
-    <button onclick="window.location.href='index.html'" style="width:100%; padding:0.9rem; margin-top:0.75rem; background:transparent; border:1px solid rgba(245,240,232,0.2); color:rgba(245,240,232,0.8); border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; transition:all 0.2s;">← Kembali ke Beranda</button>
+    <button class="btn-admin-login" onclick="adminLogin()">Masuk</button>
+    <button onclick="window.location.href='index.html'" style="width:100%; padding:0.9rem; margin-top:0.75rem; background:transparent; border:1px solid var(--input-border); color:var(--text); border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; transition:all 0.2s;">← Kembali ke Beranda</button>
     <p class="login-err" id="login-err">Username atau password salah!</p>
   </div>
 </div>
@@ -107,21 +159,81 @@
 <div id="screen-admin" class="screen">
   <div class="admin-topbar">
     <div class="brand">UD<span> Master</span> — Admin</div>
-    <div style="display:flex;gap:1rem;">
+    <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+      <!-- Theme Switcher Segmented Control -->
+      <div class="theme-switch" style="display:inline-flex; background:var(--input-bg); border:1px solid var(--input-border); padding:3px; border-radius:10px; align-items:center; transition: all 0.3s;">
+        <button onclick="setAdminTheme('light')" id="theme-light-btn" style="padding:0.45rem 0.9rem; background:transparent; color:var(--btn-color); border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; transition:all 0.2s; display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-sun"></i> Light
+        </button>
+        <button onclick="setAdminTheme('night')" id="theme-night-btn" style="padding:0.45rem 0.9rem; background:#2a6ee0; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; transition:all 0.2s; display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-moon"></i> Night
+        </button>
+      </div>
+
       <button class="btn-logout" id="tab-orders" onclick="switchTab('orders')" style="background:#e05c2a;color:#fff;border-color:#e05c2a;">Pesanan</button>
       <button class="btn-logout" id="tab-settings" onclick="switchTab('settings')">Pengaturan</button>
       <button class="btn-logout" onclick="logout()">Keluar</button>
     </div>
   </div>
   <div class="admin-body" id="panel-orders">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; border-bottom:1px solid rgba(245,240,232,0.1); padding-bottom:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; border-bottom:1px solid var(--topbar-border); padding-bottom:1rem;">
       <h2 style="font-family:'Plus Jakarta Sans',sans-serif; margin:0;">Daftar Pesanan Masuk</h2>
       
       <!-- Filter Buttons Segmented Control -->
-      <div style="display:inline-flex; background:rgba(245,240,232,0.05); border:1px solid rgba(245,240,232,0.1); padding:4px; border-radius:10px;">
+      <div style="display:inline-flex; background:var(--input-bg); border:1px solid var(--input-border); padding:4px; border-radius:10px;">
         <button id="btn-filter-all" onclick="filterAdminOrders('all')" style="padding:0.6rem 1.2rem; background:#2a6ee0; color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Semua Pesanan</button>
-        <button id="btn-filter-offset" onclick="filterAdminOrders('offset')" style="padding:0.6rem 1.2rem; background:transparent; color:rgba(245,240,232,0.6); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Offset</button>
-        <button id="btn-filter-pound" onclick="filterAdminOrders('pound')" style="padding:0.6rem 1.2rem; background:transparent; color:rgba(245,240,232,0.6); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Pound</button>
+        <button id="btn-filter-offset" onclick="filterAdminOrders('offset')" style="padding:0.6rem 1.2rem; background:transparent; color:var(--btn-color); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Offset</button>
+        <button id="btn-filter-pound" onclick="filterAdminOrders('pound')" style="padding:0.6rem 1.2rem; background:transparent; color:var(--btn-color); border:none; border-radius:8px; font-weight:600; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; transition:all 0.2s;">Pesanan Pound</button>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1.25rem; margin-bottom:2rem;">
+      <!-- Total Orders Card -->
+      <div style="background:var(--card-bg); border:1px solid var(--card-border); padding:1.5rem; border-radius:16px; display:flex; align-items:center; gap:1rem; transition: background 0.3s, border 0.3s;">
+        <div style="width:48px; height:48px; background:rgba(42,110,224,0.15); color:#2a6ee0; display:flex; align-items:center; justify-content:center; border-radius:12px; font-size:1.4rem;">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.05em; transition: color 0.3s;">Total Pesanan</div>
+          <div id="stat-total-orders" style="font-size:1.6rem; font-weight:800; margin-top:0.2rem;">0</div>
+        </div>
+      </div>
+      <!-- Total Income Card -->
+      <div style="background:var(--card-bg); border:1px solid var(--card-border); padding:1.5rem; border-radius:16px; display:flex; align-items:center; gap:1rem; transition: background 0.3s, border 0.3s;">
+        <div style="width:48px; height:48px; background:rgba(26,158,92,0.15); color:#1a9e5c; display:flex; align-items:center; justify-content:center; border-radius:12px; font-size:1.4rem;">
+          <i class="fa-solid fa-money-bill-trend-up"></i>
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.05em; transition: color 0.3s;">Total Omzet</div>
+          <div id="stat-total-income" style="font-size:1.6rem; font-weight:800; margin-top:0.2rem; color:#1a9e5c;">Rp 0</div>
+        </div>
+      </div>
+      <!-- Orders Today Card -->
+      <div style="background:var(--card-bg); border:1px solid var(--card-border); padding:1.5rem; border-radius:16px; display:flex; align-items:center; gap:1rem; transition: background 0.3s, border 0.3s;">
+        <div style="width:48px; height:48px; background:rgba(224,92,42,0.15); color:#e05c2a; display:flex; align-items:center; justify-content:center; border-radius:12px; font-size:1.4rem;">
+          <i class="fa-solid fa-calendar-day"></i>
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.05em; transition: color 0.3s;">Pesanan Hari Ini</div>
+          <div id="stat-orders-today" style="font-size:1.6rem; font-weight:800; margin-top:0.2rem;">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Bar & Pagination Info Row -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+      <!-- Search Input -->
+      <div style="position:relative; max-width:320px; width:100%;">
+        <input type="text" id="inp-search-admin" placeholder="Cari nama atau No. Antrian..." oninput="handleAdminSearch(this.value)" style="width:100%; padding:0.65rem 1rem 0.65rem 2.2rem; border-radius:10px; border:1px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:0.85rem; outline:none; transition: all 0.3s;">
+        <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:0.8rem; top:50%; transform:translateY(-50%); color:var(--text-muted-dark); font-size:0.85rem; transition: color 0.3s;"></i>
+      </div>
+      
+      <!-- Pagination Controls -->
+      <div id="pagination-controls" style="display:flex; align-items:center; gap:0.5rem;">
+        <button onclick="changePage(-1)" style="padding:0.45rem 0.85rem; background:var(--input-bg); color:var(--text); border:1px solid var(--input-border); border-radius:8px; font-weight:600; cursor:pointer; font-size:0.8rem; font-family:'Plus Jakarta Sans',sans-serif; transition: all 0.3s;">Sebelumnya</button>
+        <span id="page-indicator" style="font-size:0.8rem; color:var(--text-muted); font-weight:600; padding:0 0.5rem; font-family:'Plus Jakarta Sans',sans-serif; transition: color 0.3s;">Hal 1 dari 1</span>
+        <button onclick="changePage(1)" style="padding:0.45rem 0.85rem; background:var(--input-bg); color:var(--text); border:1px solid var(--input-border); border-radius:8px; font-weight:600; cursor:pointer; font-size:0.8rem; font-family:'Plus Jakarta Sans',sans-serif; transition: all 0.3s;">Selanjutnya</button>
       </div>
     </div>
 
@@ -142,25 +254,25 @@
 
   <div class="admin-body" id="panel-settings" style="display:none;">
     <div class="table-header"><h2>Pengaturan Sistem</h2></div>
-    <div style="background:rgba(245,240,232,.05); border:1px solid rgba(245,240,232,.1); padding:2rem; border-radius:16px; max-width:500px;">
+    <div style="background:var(--login-box-bg); border:1px solid var(--login-box-border); padding:2rem; border-radius:16px; max-width:500px; transition: background 0.3s, border 0.3s;">
       <!-- WA Number Input -->
       <div style="margin-bottom:1.5rem;">
-        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Nomor WhatsApp Konfirmasi</label>
-        <p style="font-size:.8rem; color:rgba(245,240,232,.5); margin-bottom:1rem;">Masukkan nomor WA admin (gunakan format 62, contoh: 6281234567890).</p>
-        <input type="text" id="inp-wa-number" style="width:100%; padding:1rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="6281234567890">
+        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:var(--text); transition: color 0.3s;">Nomor WhatsApp Konfirmasi</label>
+        <p style="font-size:.8rem; color:var(--text-muted); margin-bottom:1rem; transition: color 0.3s;">Masukkan nomor WA admin (gunakan format 62, contoh: 6281234567890).</p>
+        <input type="text" id="inp-wa-number" style="width:100%; padding:1rem; border-radius:10px; border:2px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:1rem; outline:none; transition: all 0.3s;" placeholder="6281234567890">
       </div>
 
       <!-- QRIS Image Upload -->
-      <div style="margin-bottom:2rem; border-top:1px solid rgba(245,240,232,.1); padding-top:1.5rem;">
-        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Upload Gambar QRIS Toko</label>
-        <p style="font-size:.8rem; color:rgba(245,240,232,.5); margin-bottom:1rem;">Unggah gambar/foto QRIS statis Anda (PNG/JPG). Sistem akan mendecode string QRIS secara otomatis untuk mendukung nominal dinamis.</p>
+      <div style="margin-bottom:2rem; border-top:1px solid var(--topbar-border); padding-top:1.5rem; transition: border-top 0.3s;">
+        <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:var(--text); transition: color 0.3s;">Upload Gambar QRIS Toko</label>
+        <p style="font-size:.8rem; color:var(--text-muted); margin-bottom:1rem; transition: color 0.3s;">Unggah gambar/foto QRIS statis Anda (PNG/JPG). Sistem akan mendecode string QRIS secara otomatis untuk mendukung nominal dinamis.</p>
         <input type="file" id="inp-qris-image" accept="image/*" onchange="handleQRISImage(this)" style="display:none;">
         <div style="display:flex; gap:1rem; align-items:center;">
-          <button type="button" onclick="document.getElementById('inp-qris-image').click()" style="padding:.6rem 1.2rem; background:rgba(245,240,232,.1); border:1px solid rgba(245,240,232,.2); color:#fff; border-radius:8px; cursor:pointer; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif;">Pilih Gambar</button>
-          <span id="lbl-qris-file" style="font-size:.8rem; color:rgba(245,240,232,.5); word-break:break-all;">Belum ada file dipilih</span>
+          <button type="button" onclick="document.getElementById('inp-qris-image').click()" style="padding:.6rem 1.2rem; background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); border-radius:8px; cursor:pointer; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif; transition: all 0.3s;">Pilih Gambar</button>
+          <span id="lbl-qris-file" style="font-size:.8rem; color:var(--text-muted); word-break:break-all; transition: color 0.3s;">Belum ada file dipilih</span>
         </div>
         
-        <div id="qris-preview-box" style="margin-top:1rem; display:none; background:rgba(0,0,0,0.2); padding:1rem; border-radius:12px; border:1px solid rgba(245,240,232,0.05);">
+        <div id="qris-preview-box" style="margin-top:1rem; display:none; background:rgba(0,0,0,0.1); padding:1rem; border-radius:12px; border:1px solid var(--card-border); transition: all 0.3s;">
           <img id="img-qris-preview" style="max-width:150px; border-radius:8px; display:block; margin:0 auto 0.8rem;">
           <div id="qris-status-msg" style="font-size:.8rem; text-align:center; font-weight:bold;"></div>
         </div>
@@ -170,25 +282,25 @@
       <button onclick="saveSettings()" style="width:100%; padding:1rem; background:#2a6ee0; color:#fff; border:none; border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem; transition:background .2s; margin-bottom: 2rem;">Simpan Pengaturan</button>
 
       <!-- Change Password -->
-      <div style="border-top:1px solid rgba(245,240,232,.1); padding-top:1.5rem;">
+      <div style="border-top:1px solid var(--topbar-border); padding-top:1.5rem; transition: border-top 0.3s;">
         <h3 style="margin-top:0; font-size:1rem; margin-bottom:1rem;">Ganti Password Admin</h3>
         
         <div style="margin-bottom:1rem; position:relative;">
-          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Password Lama</label>
-          <input type="password" id="inp-old-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Masukkan password lama">
-          <i class="fa-solid fa-eye" onclick="togglePassword('inp-old-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:var(--text); transition: color 0.3s;">Password Lama</label>
+          <input type="password" id="inp-old-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:1rem; outline:none; transition: all 0.3s;" placeholder="Masukkan password lama">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-old-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:var(--text-muted); transition: color 0.3s;"></i>
         </div>
         
         <div style="margin-bottom:1rem; position:relative;">
-          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Password Baru</label>
-          <input type="password" id="inp-new-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Masukkan password baru">
-          <i class="fa-solid fa-eye" onclick="togglePassword('inp-new-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:var(--text); transition: color 0.3s;">Password Baru</label>
+          <input type="password" id="inp-new-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:1rem; outline:none; transition: all 0.3s;" placeholder="Masukkan password baru">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-new-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:var(--text-muted); transition: color 0.3s;"></i>
         </div>
 
         <div style="margin-bottom:1.5rem; position:relative;">
-          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:rgba(245,240,232,.8);">Konfirmasi Password Baru</label>
-          <input type="password" id="inp-confirm-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid rgba(245,240,232,.15); background:rgba(245,240,232,.05); color:#fff; font-size:1rem; outline:none;" placeholder="Ulangi password baru">
-          <i class="fa-solid fa-eye" onclick="togglePassword('inp-confirm-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:rgba(245,240,232,.5);"></i>
+          <label style="display:block; margin-bottom:.6rem; font-size:.9rem; font-weight:600; color:var(--text); transition: color 0.3s;">Konfirmasi Password Baru</label>
+          <input type="password" id="inp-confirm-pass" style="width:100%; padding:1rem; padding-right:2.5rem; border-radius:10px; border:2px solid var(--input-border); background:var(--input-bg); color:var(--text); font-size:1rem; outline:none; transition: all 0.3s;" placeholder="Ulangi password baru">
+          <i class="fa-solid fa-eye" onclick="togglePassword('inp-confirm-pass', this)" style="position:absolute; right:1rem; bottom:1.2rem; cursor:pointer; color:var(--text-muted); transition: color 0.3s;"></i>
         </div>
 
         <button onclick="changePassword()" style="width:100%; padding:1rem; background:#e05c2a; color:#fff; border:none; border-radius:10px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:1rem; transition:background .2s;">Ganti Password</button>
@@ -200,8 +312,63 @@
 <script>
   let loggedInUser = '';
 
+  // ── THEME CONFIGURATION ──
+  function setAdminTheme(theme) {
+    const body = document.body;
+    const btnLight = document.getElementById('theme-light-btn');
+    const btnNight = document.getElementById('theme-night-btn');
+    
+    if (theme === 'light') {
+      body.classList.add('light-theme');
+      if (btnLight) {
+        btnLight.style.background = '#2a6ee0';
+        btnLight.style.color = '#fff';
+      }
+      if (btnNight) {
+        btnNight.style.background = 'transparent';
+        btnNight.style.color = 'var(--btn-color)';
+      }
+    } else {
+      body.classList.remove('light-theme');
+      if (btnNight) {
+        btnNight.style.background = '#2a6ee0';
+        btnNight.style.color = '#fff';
+      }
+      if (btnLight) {
+        btnLight.style.background = 'transparent';
+        btnLight.style.color = 'var(--btn-color)';
+      }
+    }
+    localStorage.setItem('admin-theme', theme);
+    
+    // Sync filter buttons styles and tabs if visible
+    if (document.getElementById('screen-admin').classList.contains('active')) {
+      const currentTab = document.getElementById('panel-orders').style.display !== 'none' ? 'orders' : 'settings';
+      switchTab(currentTab);
+      
+      if (typeof currentFilterType !== 'undefined') {
+        const activeFilterBtn = document.getElementById('btn-filter-' + currentFilterType);
+        if (activeFilterBtn) {
+          activeFilterBtn.style.background = '#2a6ee0';
+          activeFilterBtn.style.color = '#fff';
+        }
+      }
+    }
+  }
+
+  // Initialize theme immediately to prevent flashing
+  (function initTheme() {
+    const savedTheme = localStorage.getItem('admin-theme') || 'night';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  })();
+
   // Cek sesi login saat halaman dimuat
   window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('admin-theme') || 'night';
+    setAdminTheme(savedTheme);
+
     const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
     const user = sessionStorage.getItem('adminUser');
     if (isLoggedIn === 'true' && user) {
@@ -265,49 +432,128 @@
   }
   
   function logout() {
-    sessionStorage.removeItem('adminLoggedIn');
-    sessionStorage.removeItem('adminUser');
-    loggedInUser = '';
-    
-    document.getElementById('screen-admin').classList.remove('active');
-    document.getElementById('screen-admin-login').classList.add('active');
-    document.getElementById('admin-pass').value = '';
-    document.getElementById('login-err').style.display = 'none';
+    Swal.fire({
+      title: 'Keluar Sesi?',
+      text: 'Apakah Anda yakin ingin keluar dari panel admin?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#e05c2a',
+      cancelButtonColor: '#6e7881',
+      confirmButtonText: 'Ya, Keluar!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminUser');
+        loggedInUser = '';
+        
+        document.getElementById('screen-admin').classList.remove('active');
+        document.getElementById('screen-admin-login').classList.add('active');
+        document.getElementById('admin-pass').value = '';
+        document.getElementById('login-err').style.display = 'none';
+      }
+    });
   }
 
+  // Global state for admin table
+  let allOrders = [];
+  let filteredOrders = [];
+  let currentFilterType = 'all';
+  let searchQuery = '';
+  let currentPage = 1;
+  const pageSize = 10;
+
   async function loadOrders() {
+    const tbody = document.getElementById('orders-body');
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; margin-bottom:0.5rem; display:block; color:var(--accent);"></i>Memuat data pesanan...</td></tr>`;
+    }
     try {
       const res = await fetch('api/get_pesanan.php');
       const json = await res.json();
-      
-      const tbody = document.getElementById('orders-body');
       
       if (!json.success) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Gagal memuat: ${json.message}</td></tr>`;
         return;
       }
 
-      if (json.data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:2rem;">Belum ada pesanan masuk.</td></tr>`;
-        return;
-      }
-
-      // Sort strictly by ID / Queue number descending (newest on top)
-      const sortedData = json.data.sort((a, b) => Number(b.id) - Number(a.id));
-
-      tbody.innerHTML = sortedData.map(o => renderOrderRow(o)).join('');
+      // Sort strictly by ID descending
+      allOrders = json.data.sort((a, b) => Number(b.id) - Number(a.id));
+      applyFiltersAndRender();
       
-      // Retain current filter state if clicked
-      const activeFilterBtn = document.querySelector('button[style*="#2a6ee0"]');
-      if (activeFilterBtn) {
-        const type = activeFilterBtn.id.replace('btn-filter-', '');
-        filterAdminOrders(type);
-      }
-
     } catch(e) {
       console.error(e);
       document.getElementById('orders-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Terjadi kesalahan saat memuat data.</td></tr>`;
     }
+  }
+
+  function applyFiltersAndRender() {
+    // 1. Filter by service type
+    filteredOrders = allOrders;
+    if (currentFilterType === 'offset') {
+      filteredOrders = allOrders.filter(o => o.layanan.includes('Offset'));
+    } else if (currentFilterType === 'pound') {
+      filteredOrders = allOrders.filter(o => !o.layanan.includes('Offset'));
+    }
+    
+    // 2. Filter by search query
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase().trim();
+      filteredOrders = filteredOrders.filter(o => {
+        return o.nama.toLowerCase().includes(q) || String(o.id).includes(q);
+      });
+    }
+
+    // Calculate Stats based on allOrders (overall database status)
+    const totalOrders = allOrders.length;
+    const totalIncome = allOrders
+      .filter(o => o.status === 'selesai')
+      .reduce((sum, o) => sum + Number(o.harga), 0);
+    const todayStr = new Date().toDateString();
+    const ordersToday = allOrders.filter(o => {
+      return new Date(o.created_at).toDateString() === todayStr;
+    }).length;
+
+    document.getElementById('stat-total-orders').textContent = totalOrders;
+    document.getElementById('stat-total-income').textContent = formatRp(totalIncome);
+    document.getElementById('stat-orders-today').textContent = ordersToday;
+
+    // 3. Paginate
+    const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    document.getElementById('page-indicator').textContent = `Hal ${currentPage} dari ${totalPages}`;
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedData = filteredOrders.slice(startIndex, startIndex + pageSize);
+
+    const tbody = document.getElementById('orders-body');
+    if (paginatedData.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align:center; padding:4rem; color:var(--text-muted);">
+            <i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:0.8rem; display:block; opacity:0.4; color:var(--accent2);"></i>
+            <strong>Tidak ada pesanan ditemukan</strong><br>
+            <span style="font-size:0.8rem; opacity:0.8;">Coba cari dengan kata kunci lain atau filter berbeda</span>
+          </td>
+        </tr>`;
+      return;
+    }
+
+    tbody.innerHTML = paginatedData.map(o => renderOrderRow(o)).join('');
+  }
+
+  function handleAdminSearch(val) {
+    searchQuery = val;
+    currentPage = 1;
+    applyFiltersAndRender();
+  }
+
+  function changePage(dir) {
+    const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
+    currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
+    applyFiltersAndRender();
   }
 
   function renderOrderRow(o) {
@@ -328,13 +574,36 @@
       filesHtml = o.files.map(f => `<a class="file-link" href="${f.path}" target="_blank"><i class="fa-solid fa-paperclip"></i> ${f.name}</a>`).join('');
     }
 
+    let buktiHtml = '';
+    if (o.bukti_bayar) {
+      buktiHtml = `<br><br><a class="file-link" href="javascript:void(0)" onclick="showBuktiModal('${o.bukti_bayar}')" style="color:#1a9e5c; font-weight:700; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-file-invoice-dollar"></i> Bukti Transfer</a>`;
+    } else if (o.bayar === 'QRIS') {
+      buktiHtml = `<br><br><span style="color:var(--text-muted-dark); font-size:0.75rem;">(Belum upload bukti)</span>`;
+    }
+
+    const waNotifyBtn = `
+      <button onclick="sendWaNotification(${o.id}, '${o.nama}', '${o.wa}', '${o.status}')" title="Kirim Notifikasi WA" style="margin-left:0.4rem; padding:0.5rem 0.65rem; background:#1a9e5c; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center;">
+        <i class="fa-brands fa-whatsapp"></i>
+      </button>
+    `;
+
+    const deleteBtn = `
+      <button onclick="deleteOrder(${o.id})" title="Hapus Pesanan" style="margin-left:0.4rem; padding:0.5rem 0.65rem; background:#ff6b6b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center;">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    `;
+
     // Status selector dropdown
     const statusSelect = `
-      <select onchange="updateOrderStatus(${o.id}, this.value)" style="padding:0.5rem; border-radius:8px; background:#222; color:#fff; border:1px solid rgba(245,240,232,0.15); font-weight:600; cursor:pointer;">
-        <option value="menunggu" ${o.status === 'menunggu' ? 'selected' : ''}>Menunggu Diproses</option>
-        <option value="diproses" ${o.status === 'diproses' ? 'selected' : ''}>Sedang Diproses</option>
-        <option value="selesai" ${o.status === 'selesai' ? 'selected' : ''}>Selesai</option>
-      </select>
+      <div style="display:flex; align-items:center;">
+        <select onchange="updateOrderStatus(${o.id}, this.value)" style="padding:0.5rem; border-radius:8px; background:var(--input-bg); color:var(--text); border:1px solid var(--input-border); font-weight:600; cursor:pointer; transition: all 0.3s;">
+          <option value="menunggu" ${o.status === 'menunggu' ? 'selected' : ''}>Menunggu</option>
+          <option value="diproses" ${o.status === 'diproses' ? 'selected' : ''}>Diproses</option>
+          <option value="selesai" ${o.status === 'selesai' ? 'selected' : ''}>Selesai</option>
+        </select>
+        ${waNotifyBtn}
+        ${deleteBtn}
+      </div>
     `;
     
     return `
@@ -343,17 +612,18 @@
         <td>${new Date(o.created_at).toLocaleString('id-ID')}</td>
         <td>
           <strong>${o.nama}</strong><br>
-          <span style="color:rgba(245,240,232,.5); font-size:0.85rem;">WA: ${o.wa}</span>
+          <span style="color:var(--text-muted); font-size:0.85rem;">WA: ${o.wa}</span>
         </td>
         <td>${detailHtml}</td>
         <td>
           <strong>${o.pengiriman}</strong><br>
-          <span style="font-size:.8rem; color:rgba(245,240,232,.5);">${o.alamat || '-'}</span>
+          <span style="font-size:.8rem; color:var(--text-muted);">${o.alamat || '-'}</span>
         </td>
         <td>
           <strong>${o.bayar}</strong><br>
-          <span style="color:#1a9e5c; font-weight:bold;">${formatRp(o.harga)}</span><br><br>
-          <span class="badge-status ${o.status}">${o.status.toUpperCase()}</span>
+          <span style="color:#1a9e5c; font-weight:bold;">${formatRp(o.harga)}</span><br>
+          <span class="badge-status ${o.status}" style="margin-top:0.25rem;">${o.status.toUpperCase()}</span>
+          ${buktiHtml}
         </td>
         <td>${filesHtml}</td>
         <td>${statusSelect}</td>
@@ -375,9 +645,7 @@
           title: 'Berhasil',
           text: 'Status pesanan berhasil diperbarui!',
           timer: 1500,
-          showConfirmButton: false,
-          background: '#151515',
-          color: '#fff'
+          showConfirmButton: false
         });
         loadOrders();
       } else {
@@ -388,8 +656,68 @@
     }
   }
 
+  function sendWaNotification(id, nama, wa, status) {
+    let text = '';
+    const antrianText = '#' + String(id).padStart(3, '0');
+    
+    if (status === 'menunggu') {
+      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* telah kami terima dan masuk daftar antrian. Mohon tunggu proses selanjutnya ya!`;
+    } else if (status === 'diproses') {
+      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* saat ini *sedang diproses* oleh operator kami.`;
+    } else if (status === 'selesai') {
+      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* telah *selesai dikerjakan* dan siap diambil/dikirim. Terima kasih!`;
+    }
+    
+    let cleanWa = wa.replace(/[^0-9]/g, '');
+    if (cleanWa.startsWith('0')) {
+      cleanWa = '62' + cleanWa.substring(1);
+    }
+    
+    const url = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  }
+
+  function deleteOrder(id) {
+    Swal.fire({
+      title: 'Hapus Pesanan?',
+      text: `Pesanan #${id} beserta seluruh berkas desain dan bukti bayarnya akan dihapus secara permanen!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e05c2a',
+      cancelButtonColor: '#6e7881',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch('api/hapus_pesanan.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+          });
+          const json = await res.json();
+          if (json.success) {
+            Swal.fire({
+              title: 'Terhapus!',
+              text: 'Pesanan berhasil dihapus.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
+            loadOrders();
+          } else {
+            Swal.fire('Gagal', json.message, 'error');
+          }
+        } catch (e) {
+          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+        }
+      }
+    });
+  }
+
   function filterAdminOrders(type) {
-    const rows = document.querySelectorAll('#orders-body tr');
+    currentFilterType = type;
+    currentPage = 1;
     
     const btnAll = document.getElementById('btn-filter-all');
     const btnOffset = document.getElementById('btn-filter-offset');
@@ -398,31 +726,16 @@
     // Reset button styles
     [btnAll, btnOffset, btnPound].forEach(btn => {
       btn.style.background = 'transparent';
-      btn.style.color = 'rgba(245,240,232,0.6)';
+      btn.style.color = 'var(--btn-color)';
     });
     
-    if (type === 'all') {
-      btnAll.style.background = '#2a6ee0';
-      btnAll.style.color = '#fff';
-    } else if (type === 'offset') {
-      btnOffset.style.background = '#2a6ee0';
-      btnOffset.style.color = '#fff';
-    } else if (type === 'pound') {
-      btnPound.style.background = '#2a6ee0';
-      btnPound.style.color = '#fff';
+    const activeBtn = document.getElementById('btn-filter-' + type);
+    if (activeBtn) {
+      activeBtn.style.background = '#2a6ee0';
+      activeBtn.style.color = '#fff';
     }
 
-    rows.forEach(row => {
-      if (!row.hasAttribute('data-layanan')) return; // skip loader row
-      const isOffset = row.getAttribute('data-layanan') === 'offset';
-      if (type === 'all') {
-        row.style.display = '';
-      } else if (type === 'offset') {
-        row.style.display = isOffset ? '' : 'none';
-      } else if (type === 'pound') {
-        row.style.display = !isOffset ? '' : 'none';
-      }
-    });
+    applyFiltersAndRender();
   }
 
   function switchTab(tab) {
@@ -433,8 +746,8 @@
       document.getElementById('tab-orders').style.color = '#fff';
       document.getElementById('tab-orders').style.borderColor = '#e05c2a';
       document.getElementById('tab-settings').style.background = 'transparent';
-      document.getElementById('tab-settings').style.color = 'rgba(245,240,232,.6)';
-      document.getElementById('tab-settings').style.borderColor = 'rgba(245,240,232,.2)';
+      document.getElementById('tab-settings').style.color = 'var(--btn-color)';
+      document.getElementById('tab-settings').style.borderColor = 'var(--btn-border)';
     } else {
       document.getElementById('panel-orders').style.display = 'none';
       document.getElementById('panel-settings').style.display = 'block';
@@ -442,8 +755,8 @@
       document.getElementById('tab-settings').style.color = '#fff';
       document.getElementById('tab-settings').style.borderColor = '#e05c2a';
       document.getElementById('tab-orders').style.background = 'transparent';
-      document.getElementById('tab-orders').style.color = 'rgba(245,240,232,.6)';
-      document.getElementById('tab-orders').style.borderColor = 'rgba(245,240,232,.2)';
+      document.getElementById('tab-orders').style.color = 'var(--btn-color)';
+      document.getElementById('tab-orders').style.borderColor = 'var(--btn-border)';
       loadSettings();
     }
   }
@@ -570,6 +883,27 @@
       Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
     }
   }
+
+  function showBuktiModal(filename) {
+    const modal = document.getElementById('modal-bukti');
+    const img = document.getElementById('img-modal-bukti');
+    img.src = 'uploads/' + filename;
+    modal.style.display = 'flex';
+  }
+
+  function closeBuktiModal() {
+    document.getElementById('modal-bukti').style.display = 'none';
+  }
 </script>
+
+<!-- Modal Bukti Transfer -->
+<div id="modal-bukti" style="display:none; position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(8px); z-index:1000; align-items:center; justify-content:center; padding:2rem; transition: background 0.3s;" onclick="closeBuktiModal()">
+  <div style="background:var(--modal-bg); border:1px solid var(--card-border); border-radius:16px; max-width:500px; width:100%; position:relative; padding:1.5rem; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); transition: background 0.3s, border 0.3s;" onclick="event.stopPropagation()">
+    <button onclick="closeBuktiModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; font-weight:bold; transition: color 0.3s;">✕</button>
+    <h3 style="margin-bottom:1rem; font-family:'Plus Jakarta Sans',sans-serif; color:var(--text); transition: color 0.3s;">Bukti Transfer QRIS</h3>
+    <img id="img-modal-bukti" src="" style="max-width:100%; max-height:70vh; border-radius:8px; display:block; margin:0 auto; border:1px solid var(--card-border); transition: border 0.3s;">
+  </div>
+</div>
+
 </body>
 </html>

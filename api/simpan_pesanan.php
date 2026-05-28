@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = mysqli_connect("localhost", "root", "", "ud_master");
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
+require_once 'db.php';
 
 $input = file_get_contents("php://input");
 $data = json_decode($input, true);
@@ -29,9 +25,10 @@ $wa = mysqli_real_escape_string($conn, $data['wa'] ?? '');
 $bayar = mysqli_real_escape_string($conn, $data['bayar'] ?? '');
 $harga = (float)($data['harga'] ?? 0);
 $status = 'menunggu';
+$bukti_bayar = mysqli_real_escape_string($conn, $data['bukti_bayar'] ?? '');
 
-$query = "INSERT INTO pesanan (nama, layanan, warna, jumlah, kertas, ukuran, pengiriman, alamat, catatan, wa, bayar, harga, status) 
-          VALUES ('$nama', '$layanan', '$warna', '$jumlah', '$kertas', '$ukuran', '$pengiriman', '$alamat', '$catatan', '$wa', '$bayar', '$harga', '$status')";
+$query = "INSERT INTO pesanan (nama, layanan, warna, jumlah, kertas, ukuran, pengiriman, alamat, catatan, wa, bayar, harga, bukti_bayar, status) 
+          VALUES ('$nama', '$layanan', '$warna', '$jumlah', '$kertas', '$ukuran', '$pengiriman', '$alamat', '$catatan', '$wa', '$bayar', '$harga', '$bukti_bayar', '$status')";
 
 if (mysqli_query($conn, $query)) {
     $id = mysqli_insert_id($conn);

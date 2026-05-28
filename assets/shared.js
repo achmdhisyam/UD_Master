@@ -54,15 +54,31 @@ function renderStepIndicator(currentStep) {
   const isPound = s.layanan === 'Pound (Potong)';
   const totalSteps = isPound ? 3 : 4;
   
+  const stepNamesOffset = ['Informasi', 'Spesifikasi', 'Pengiriman', 'Pembayaran'];
+  const stepNamesPound = ['Informasi', 'Pengiriman', 'Pembayaran'];
+  const stepNames = isPound ? stepNamesPound : stepNamesOffset;
+  
   let html = '';
   for (let i = 1; i <= totalSteps; i++) {
     let className = 'step-dot';
+    let labelText = i;
     if (i < currentStep) {
       className += ' done';
+      labelText = '<i class="fa-solid fa-check"></i>';
     } else if (i === currentStep) {
       className += ' active';
     }
-    html += `<div class="${className}"></div>`;
+    
+    html += `
+      <div class="step-indicator-item ${i === currentStep ? 'active' : ''}">
+        <div class="${className}">${labelText}</div>
+        <span class="step-indicator-label">${stepNames[i-1]}</span>
+      </div>
+    `;
+    
+    if (i < totalSteps) {
+      html += `<div class="step-indicator-line"></div>`;
+    }
   }
   el.innerHTML = html;
 }

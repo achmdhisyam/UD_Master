@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = mysqli_connect("localhost", "root", "", "ud_master");
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
+require_once 'db.php';
 
 $query = "
     SELECT p.*, GROUP_CONCAT(f.path_file) as file_paths, GROUP_CONCAT(f.nama_file) as file_names

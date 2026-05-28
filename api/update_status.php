@@ -1,11 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-$conn = mysqli_connect("localhost", "root", "", "ud_master");
-if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
-}
+require_once 'db.php';
 
 $input = file_get_contents("php://input");
 $data = json_decode($input, true);
