@@ -8,24 +8,35 @@ UD_Master adalah platform berbasis web modern yang dirancang untuk mempermudah p
 
 ### 👤 Portal Pelanggan (Client-Side)
 - **Kalkulator Estimasi Harga Otomatis:** Perhitungan harga instan berdasarkan kuantitas lembar, jenis layanan (Offset/Pound), warna cetak, jenis kertas, dan ukuran kertas.
-- **Sistem Unggah Berkas Desain:** Mendukung pengunggahan berkas desain (PDF, DOCX, XLSX, CSV, Gambar) dengan progress bar interaktif dan validasi keamanan tipe MIME.
-- **Pembayaran QRIS Dinamis:** Generator otomatis nominal pembayaran sesuai harga total pesanan terintegrasi dengan generator QR Code di browser.
-- **Pelacakan Status Pesanan (Real-Time Timeline):** Pelanggan dapat mengecek status pengerjaan pesanan secara transparan menggunakan nomor antrian.
-- **Integrasi WhatsApp:** Link konfirmasi otomatis untuk langsung mengirim detail pesanan ke WhatsApp admin setelah pembayaran selesai.
+- **Sistem Unggah Berkas Desain:** Mendukung pengunggahan berkas desain (PDF, DOCX, XLSX, CSV, Gambar) dengan progress bar interaktif, drag-and-drop zone, pratinjau berkas secara instan, dan validasi keamanan tipe MIME.
+- **Pembayaran QRIS Dinamis & Manual:** Menampilkan QRIS dinamis (dengan nominal otomatis dari string QRIS yang ter-decode) serta QRIS statis (input nominal manual) jika string QRIS gagal ter-decode.
+- **Unduh Resi Digital (Receipt Downloader):** Pelanggan dapat mengunduh bukti pesanan (resi) berupa gambar PNG langsung setelah checkout sukses untuk disimpan di perangkat lokal.
+- **Pelacakan Status Pesanan dengan Validasi WhatsApp (Secure Order Tracking):** Pelanggan dapat mengecek status pengerjaan pesanan secara transparan (Menunggu, Diproses, Selesai) menggunakan nomor antrian. Proses pengecekan dilengkapi validasi nomor WhatsApp yang terdaftar untuk melindungi keamanan data pesanan dan mencegah akses berkas ilegal oleh pihak lain.
+- **Floating WhatsApp Chat:** Tombol melayang WhatsApp di halaman depan (`index.html`) untuk memudahkan komunikasi langsung pelanggan ke admin.
+- **Integrasi Kirim Pesan WhatsApp:** Menghasilkan link WhatsApp otomatis berisi template detail lengkap rincian pemesanan untuk konfirmasi manual cepat ke admin.
+- **Indikator Langkah Formulir (Form Step Indicator):** Penanda visual alur pengerjaan formulir yang memandu pengguna melalui langkah-langkah input data hingga pembayaran.
+- **Kartu Ringkasan Pemesanan Dinamis (Live Summary Card):** Panel samping interaktif yang merangkum semua opsi pesanan dan rincian harga secara real-time.
+- **Pemberitahuan Interaktif SweetAlert2:** Notifikasi popup bergaya modern untuk alur konfirmasi pengiriman, kesalahan validasi form, dan proses pemuatan data.
+- **Salin Klik Cepat (Copy-to-Clipboard Utility):** Kemudahan menyalin nomor rekening, nominal pembayaran, atau nomor antrian dalam satu klik pada halaman pembayaran.
+- **Desain UI/UX Responsive & Fluid:** Antarmuka yang teroptimasi secara visual untuk kenyamanan akses pada perangkat Mobile, Tablet, dan Desktop.
+
 
 ### 🛡️ Dashboard Admin (Admin-Side)
-- **Sistem Keamanan Login:** Proteksi sesi aman, hashing password menggunakan bcrypt, serta penanganan pembatasan login cooldown secara bertahap (rate-limiting).
-- **Manajemen Daftar Pesanan:** Tabel interaktif pencarian pesanan, filter jenis layanan, ringkasan statistik omzet, serta pembaruan status pengerjaan (Menunggu ➔ Diproses ➔ Selesai).
+- **Sistem Keamanan Login:** Proteksi sesi aman PHP Session, hashing password menggunakan bcrypt, serta penanganan pembatasan login cooldown secara bertahap (rate-limiting) untuk mencegah serangan brute-force.
+- **Order Polling & Notifikasi Suara (Chime Notification):** Polling berkala setiap 30 detik untuk mendeteksi pesanan baru yang masuk, memicu suara notifikasi (chime), dan menampilkan notifikasi toast dinamis.
+- **Manajemen Daftar Pesanan:** Tabel interaktif pencarian pesanan, pagination data, filter jenis layanan (Offset/Pound), ringkasan statistik omzet total, jumlah transaksi hari ini, serta pembaruan status pengerjaan.
 - **Pratinjau Berkas Premium (Client-Side Render):** Dukungan baca dan tampilkan langsung (preview) berbagai berkas unggahan pelanggan tanpa perlu mengunduh:
   * **Gambar (PNG, JPG, WEBP)** ➔ Popup gambar menggunakan SweetAlert2.
   * **PDF** ➔ Embed berkas di dalam modal.
   * **Word (DOCX)** ➔ Render halaman langsung menggunakan library `docx-preview`.
   * **Excel (XLSX, CSV)** ➔ Render tabel lengkap dengan tombol navigasi perpindahan sheet (SheetJS).
+- **Aksi Cepat Admin:** Tombol pintasan untuk mengirim notifikasi WhatsApp status pengerjaan ke pelanggan dengan template teks dinamis, serta tombol hapus transaksi permanen beserta berkas terkait.
 - **Pengaturan Sistem Dinamis:**
   * Konfigurasi nomor WhatsApp admin target.
   * Unggah gambar QRIS statis toko yang secara otomatis didecode string QR-nya untuk keperluan nominal dinamis.
-  * Fitur sembunyikan area dropzone unggahan secara dinamis ketika file QRIS aktif.
   * Ganti password admin secara aman.
+
+  - **Sistem Tema Gelap/Terang Global:** Konsistensi transisi tema (Light & Night) yang mengikuti preferensi pengguna di seluruh halaman pelanggan.
 
 ### ⚙️ Sistem Backend & Pemeliharaan (Cron-like Cleanup)
 - **Auto-Cleanup Script:** Pembersih otomatis berkas sampah di folder `uploads/` yang tidak terdaftar di database (> 2 jam) dan pembersih database pesanan yang sudah selesai (> 30 hari) secara berkala demi menghemat penyimpanan server.
