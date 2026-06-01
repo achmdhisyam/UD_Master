@@ -38,22 +38,38 @@
 
 <div id="screen-admin" class="screen">
   <div class="admin-topbar">
-    <div class="brand">UD<span> Master</span> — Admin</div>
-    <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+    <div class="brand">
+      UD<span>Master</span>
+      <span class="admin-badge">Panel</span>
+    </div>
+
+    <!-- Segmented Navigation Menu -->
+    <div class="admin-nav-menu">
+      <button id="tab-orders" class="admin-nav-item active" onclick="switchTab('orders')">
+        <i class="fa-solid fa-list-check"></i> Pesanan
+      </button>
+      <button id="tab-reports" class="admin-nav-item" onclick="switchTab('reports')">
+        <i class="fa-solid fa-chart-line"></i> Laporan
+      </button>
+      <button id="tab-settings" class="admin-nav-item" onclick="switchTab('settings')">
+        <i class="fa-solid fa-sliders"></i> Pengaturan
+      </button>
+    </div>
+
+    <div class="admin-topbar-actions">
       <!-- Theme Switcher Segmented Control -->
       <div class="theme-switch">
         <button onclick="setAdminTheme('light')" id="theme-light-btn" class="theme-btn">
-          <i class="fa-solid fa-sun"></i> Light
+          <i class="fa-solid fa-sun"></i><span class="theme-text"> Light</span>
         </button>
         <button onclick="setAdminTheme('night')" id="theme-night-btn" class="theme-btn">
-          <i class="fa-solid fa-moon"></i> Night
+          <i class="fa-solid fa-moon"></i><span class="theme-text"> Night</span>
         </button>
       </div>
 
-      <button class="btn-logout" id="tab-orders" onclick="switchTab('orders')" style="background:#e05c2a;color:#fff;border-color:#e05c2a;">Pesanan</button>
-      <button class="btn-logout" id="tab-reports" onclick="switchTab('reports')">Laporan</button>
-      <button class="btn-logout" id="tab-settings" onclick="switchTab('settings')">Pengaturan</button>
-      <button class="btn-logout" onclick="logout()">Keluar</button>
+      <button class="btn-logout" onclick="logout()">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i><span class="logout-text"> Keluar</span>
+      </button>
     </div>
   </div>
   <div class="admin-body active-tab" id="panel-orders">

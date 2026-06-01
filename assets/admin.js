@@ -642,6 +642,10 @@ function switchTab(tab) {
   const panelOrders = document.getElementById('panel-orders');
   const panelSettings = document.getElementById('panel-settings');
   const panelReports = document.getElementById('panel-reports');
+  
+  const tabOrders = document.getElementById('tab-orders');
+  const tabSettings = document.getElementById('tab-settings');
+  const tabReports = document.getElementById('tab-reports');
 
   if(tab === 'orders') {
     panelOrders.style.display = 'block';
@@ -652,19 +656,9 @@ function switchTab(tab) {
     panelSettings.classList.remove('active-tab');
     if (panelReports) panelReports.classList.remove('active-tab');
     
-    document.getElementById('tab-orders').style.background = '#e05c2a';
-    document.getElementById('tab-orders').style.color = '#fff';
-    document.getElementById('tab-orders').style.borderColor = '#e05c2a';
-    
-    document.getElementById('tab-settings').style.background = 'transparent';
-    document.getElementById('tab-settings').style.color = 'var(--btn-color)';
-    document.getElementById('tab-settings').style.borderColor = 'var(--btn-border)';
-    
-    if (document.getElementById('tab-reports')) {
-      document.getElementById('tab-reports').style.background = 'transparent';
-      document.getElementById('tab-reports').style.color = 'var(--btn-color)';
-      document.getElementById('tab-reports').style.borderColor = 'var(--btn-border)';
-    }
+    if (tabOrders) tabOrders.classList.add('active');
+    if (tabSettings) tabSettings.classList.remove('active');
+    if (tabReports) tabReports.classList.remove('active');
   } else if(tab === 'reports') {
     panelOrders.style.display = 'none';
     panelSettings.style.display = 'none';
@@ -674,17 +668,9 @@ function switchTab(tab) {
     panelSettings.classList.remove('active-tab');
     if (panelReports) panelReports.classList.add('active-tab');
     
-    document.getElementById('tab-reports').style.background = '#e05c2a';
-    document.getElementById('tab-reports').style.color = '#fff';
-    document.getElementById('tab-reports').style.borderColor = '#e05c2a';
-    
-    document.getElementById('tab-orders').style.background = 'transparent';
-    document.getElementById('tab-orders').style.color = 'var(--btn-color)';
-    document.getElementById('tab-orders').style.borderColor = 'var(--btn-border)';
-    
-    document.getElementById('tab-settings').style.background = 'transparent';
-    document.getElementById('tab-settings').style.color = 'var(--btn-color)';
-    document.getElementById('tab-settings').style.borderColor = 'var(--btn-border)';
+    if (tabOrders) tabOrders.classList.remove('active');
+    if (tabSettings) tabSettings.classList.remove('active');
+    if (tabReports) tabReports.classList.add('active');
     
     initReportsPage();
   } else {
@@ -696,19 +682,10 @@ function switchTab(tab) {
     panelSettings.classList.add('active-tab');
     if (panelReports) panelReports.classList.remove('active-tab');
     
-    document.getElementById('tab-settings').style.background = '#e05c2a';
-    document.getElementById('tab-settings').style.color = '#fff';
-    document.getElementById('tab-settings').style.borderColor = '#e05c2a';
+    if (tabOrders) tabOrders.classList.remove('active');
+    if (tabSettings) tabSettings.classList.add('active');
+    if (tabReports) tabReports.classList.remove('active');
     
-    document.getElementById('tab-orders').style.background = 'transparent';
-    document.getElementById('tab-orders').style.color = 'var(--btn-color)';
-    document.getElementById('tab-orders').style.borderColor = 'var(--btn-border)';
-    
-    if (document.getElementById('tab-reports')) {
-      document.getElementById('tab-reports').style.background = 'transparent';
-      document.getElementById('tab-reports').style.color = 'var(--btn-color)';
-      document.getElementById('tab-reports').style.borderColor = 'var(--btn-border)';
-    }
     loadSettings();
   }
 }
