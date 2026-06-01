@@ -838,3 +838,28 @@ background: var(--white); border: 2px solid var(--border); border-radius: 12px;
     max-height: 52vh;
   }
 }
+
+/* Global Page Transition Animations */
+@keyframes globalPageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html, body {
+  scroll-behavior: smooth;
+}
+
+body {
+  animation: globalPageFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Fade in for standard form containers */
+main, .form-body, .landing-card, .success-card {
+  animation: globalPageFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

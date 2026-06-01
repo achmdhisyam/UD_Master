@@ -13,325 +13,9 @@
   <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
   <script src="https://unpkg.com/docx-preview@0.1.15/dist/docx-preview.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    body {
-      --bg: #0d0d0d;
-      --text: #f5f0e8;
-      --text-muted: rgba(245,240,232,0.5);
-      --text-muted-dark: rgba(245,240,232,0.4);
-      --card-bg: rgba(245,240,232,0.03);
-      --card-border: rgba(245,240,232,0.08);
-      --input-bg: rgba(245,240,232,0.08);
-      --input-border: rgba(245,240,232,0.15);
-      --topbar-bg: #0d0d0d;
-      --topbar-border: rgba(245,240,232,0.1);
-      --row-border: rgba(245,240,232,0.06);
-      --btn-border: rgba(245,240,232,0.2);
-      --btn-color: rgba(245,240,232,0.6);
-      --login-box-bg: rgba(245,240,232,.05);
-      --login-box-border: rgba(245,240,232,.12);
-      --modal-bg: #151515;
-      --overlay-bg: rgba(0, 0, 0, 0.85);
-
-      font-family: 'Plus Jakarta Sans';
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      min-height: 100vh;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.light-theme {
-      --bg: #f5f0e8;
-      --text: #0d0d0d;
-      --text-muted: rgba(13,13,13,0.6);
-      --text-muted-dark: rgba(13,13,13,0.5);
-      --card-bg: #ffffff;
-      --card-border: #ede8da;
-      --input-bg: #ffffff;
-      --input-border: #d4cfc0;
-      --topbar-bg: #ede8da;
-      --topbar-border: #d4cfc0;
-      --row-border: #ede8da;
-      --btn-border: #d4cfc0;
-      --btn-color: rgba(13,13,13,0.6);
-      --login-box-bg: #ffffff;
-      --login-box-border: #d4cfc0;
-      --modal-bg: #ffffff;
-      --overlay-bg: rgba(0, 0, 0, 0.4);
-    }
-    h1, h2, h3, .brand { font-family: 'Plus Jakarta Sans'; }
-    
-    .screen { display: none; flex-direction: column; min-height: 100vh; }
-    .screen.active { display: flex; }
-    
-    /* LOGIN */
-    #screen-admin-login { align-items: center; justify-content: center; padding: 2rem; }
-    .admin-login-box {
-      background: var(--login-box-bg); border: 1px solid var(--login-box-border);
-      border-radius: 16px; padding: 2rem 1.5rem; width: 100%; max-width: 380px; text-align: center;
-    }
-    .admin-field { margin-bottom: 1.2rem; text-align: left; }
-    .admin-field label { display: block; font-size: .78rem; font-weight: 500; color: var(--text-muted); margin-bottom: .45rem; letter-spacing: .05em; }
-    .admin-field input {
-      width: 100%; background: var(--input-bg); border: 2px solid var(--input-border);
-      border-radius: 10px; padding: .85rem 1rem; color: var(--text); outline: none; box-sizing: border-box;
-    }
-    .btn-admin-login {
-      width: 100%; background: #2a6ee0; color: #ffffff;
-      border: none; border-radius: 999px; padding: .9rem; margin-top: .5rem;
-      font-family: 'Plus Jakarta Sans'; font-size: 1rem; font-weight: 700; cursor: pointer;
-    }
-    .login-err { color: #ff6b6b; font-size: .82rem; margin-top: .8rem; display: none; }
-    
-    /* DASHBOARD */
-    .admin-topbar {
-      padding: 1rem 1.25rem; border-bottom: 1px solid var(--topbar-border);
-      display: flex; align-items: center; justify-content: space-between; background: var(--topbar-bg);
-      transition: background 0.3s, border-bottom 0.3s;
-    }
-    .admin-topbar .brand { font-size: 1.2rem; font-weight: 800; }
-    .admin-topbar .brand span { color: #2a6ee0; }
-    .btn-logout { background: none; border: 1px solid var(--btn-border); border-radius: 8px; padding: .5rem 1rem; color: var(--btn-color); cursor: pointer; transition: all 0.3s; }
-    
-    .admin-body { padding: 2rem; flex: 1; overflow-y: auto; }
-    .table-header { margin-bottom: 1.5rem; }
-    .orders-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    .orders-table th { text-align: left; padding: .8rem; font-size: .75rem; text-transform: uppercase; color: var(--text-muted-dark); border-bottom: 1px solid var(--topbar-border); }
-    .orders-table td { padding: 1rem .8rem; border-bottom: 1px solid var(--row-border); vertical-align: top; }
-    
-    .badge { display: inline-block; padding: .25rem .6rem; border-radius: 6px; font-size: .75rem; font-weight: 700; }
-    .badge.offset { background: rgba(224,92,42,.15); color: #e05c2a; }
-    .badge.pound  { background: rgba(42,110,224,.15); color: #2a6ee0; }
-    
-    .badge-status { display: inline-block; padding: .25rem .7rem; border-radius: 999px; font-size: .75rem; font-weight: 700; }
-    .badge-status.menunggu { background: rgba(255,193,7,.15); color: #ffc107; }
-    .badge-status.diproses { background: rgba(42,110,224,.15); color: #2a6ee0; }
-    .badge-status.selesai  { background: rgba(26,158,92,.15); color: #1a9e5c; }
-    
-    .file-link { color: #2a6ee0; text-decoration: none; display: block; margin-bottom: .2rem; }
-    .file-link:hover { text-decoration: underline; }
-
-    /* MOBILE RESPONSIVE */
-    @media (max-width: 768px) {
-      .admin-topbar { flex-direction: column; gap: 1rem; align-items: center; text-align: center; }
-      .admin-topbar div { justify-content: center; width: 100%; flex-wrap: wrap; }
-      .admin-body { padding: 1rem; }
-      .orders-table, .orders-table tbody, .orders-table tr, .orders-table td { display: block; width: 100%; box-sizing: border-box; }
-      .orders-table thead { display: none; }
-      .orders-table tr { border: 1px solid var(--topbar-border); margin-bottom: 1rem; border-radius: 8px; padding: 1rem; background: var(--card-bg); }
-      .orders-table td { border-bottom: 1px solid var(--row-border); padding: 0.8rem 0; }
-      .orders-table td:last-child { border-bottom: none; }
-      
-      /* Use nth-child to add labels on mobile */
-      .orders-table td:nth-child(1)::before { content: "ID / Antrian"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(2)::before { content: "Waktu"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(3)::before { content: "Pelanggan"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(4)::before { content: "Layanan & Detail"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(5)::before { content: "Pengiriman"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(6)::before { content: "Pembayaran"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(7)::before { content: "File Unggahan"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-      .orders-table td:nth-child(8)::before { content: "Aksi Status"; display: block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; font-weight: bold; }
-    }
-    /* Micro-interactions for theme switch */
-    .theme-switch button i {
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .theme-switch button:hover i {
-      transform: rotate(360deg) scale(1.2);
-    }
-
-    /* Themed Status Dropdown */
-    .status-select {
-      padding: 0.5rem;
-      border-radius: 8px;
-      background: var(--input-bg);
-      color: var(--text);
-      border: 1px solid var(--input-border);
-      font-weight: 600;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.3s;
-    }
-    .status-select option {
-      background: var(--modal-bg);
-      color: var(--text);
-    }
-
-    /* Premium File Badge/Card UI */
-    .file-badge-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-width: 220px;
-    }
-    .file-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.45rem 0.75rem;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 8px;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .file-badge:hover {
-      transform: translateY(-2px);
-      border-color: var(--btn-border);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      background: var(--input-bg);
-      color: #2a6ee0;
-    }
-    .file-icon {
-      font-size: 1rem;
-    }
-    .file-icon.pdf { color: #e74c3c; }
-    .file-icon.image { color: #2ecc71; }
-    .file-icon.word { color: #3498db; }
-    .file-icon.excel { color: #27ae60; }
-    .file-icon.other { color: #95a5a6; }
-    
-    .file-name-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 140px;
-    }
-    .file-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--btn-border);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    /* Global Font reset to Plus Jakarta Sans */
-    body, html, input, select, textarea, button, a, span, div, h1, h2, h3, h4, h5, h6, label, table, tr, td, th {
-      font-family: 'Plus Jakarta Sans';
-    }
-
-    /* Settings Grid Layout */
-    .settings-grid {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    @media (max-width: 900px) {
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .settings-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 2.25rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-    .settings-card:hover {
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-      border-color: var(--btn-border);
-    }
-    .settings-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-top: 0;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1px solid var(--row-border);
-      padding-bottom: 0.8rem;
-    }
-    .settings-card h3 i {
-      color: #2a6ee0;
-    }
-    
-    /* Settings Inputs focus glow */
-    .settings-input {
-      width: 100%;
-      padding: 0.9rem 1.1rem;
-      border-radius: 12px;
-      border: 2px solid var(--input-border);
-      background: var(--input-bg);
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      box-sizing: border-box;
-      transition: all 0.25s ease;
-    }
-    .settings-input:focus {
-      border-color: #2a6ee0;
-      background: var(--card-bg);
-      box-shadow: 0 0 10px rgba(42, 110, 224, 0.2);
-    }
-    
-    /* QRIS Dropzone UI */
-    .qris-dropzone {
-      border: 2px dashed var(--input-border);
-      border-radius: 14px;
-      padding: 1.8rem;
-      text-align: center;
-      background: var(--input-bg);
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .qris-dropzone:hover {
-      border-color: #2a6ee0;
-      background: rgba(42, 110, 224, 0.05);
-    }
-    .qris-dropzone i {
-      font-size: 2rem;
-      color: #2a6ee0;
-    }
-    
-    /* Premium Save/Action Buttons */
-    .btn-save-settings {
-      width: 100%;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, #2a6ee0, #1453b8);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 15px rgba(42, 110, 224, 0.3);
-      transition: all 0.25s ease;
-    }
-    .btn-save-settings:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(42, 110, 224, 0.4);
-    }
-    
-    .btn-change-pass {
-      width: 100%;
-      padding: 0.9rem;
-      background: linear-gradient(135deg, #e05c2a, #b34117);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 15px rgba(224, 92, 42, 0.3);
-      transition: all 0.25s ease;
-    }
-    .btn-change-pass:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(224, 92, 42, 0.4);
-    }
-  </style>
+  <!-- Chart.js for reports graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="assets/admin.css" />
 </head>
 <body>
 
@@ -357,21 +41,22 @@
     <div class="brand">UD<span> Master</span> — Admin</div>
     <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
       <!-- Theme Switcher Segmented Control -->
-      <div class="theme-switch" style="display:inline-flex; background:var(--input-bg); border:1px solid var(--input-border); padding:3px; border-radius:10px; align-items:center; transition: all 0.3s;">
-        <button onclick="setAdminTheme('light')" id="theme-light-btn" style="padding:0.45rem 0.9rem; background:transparent; color:var(--btn-color); border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans'; font-size:0.75rem; transition:all 0.2s; display:flex; align-items:center; gap:6px;">
+      <div class="theme-switch">
+        <button onclick="setAdminTheme('light')" id="theme-light-btn" class="theme-btn">
           <i class="fa-solid fa-sun"></i> Light
         </button>
-        <button onclick="setAdminTheme('night')" id="theme-night-btn" style="padding:0.45rem 0.9rem; background:#2a6ee0; color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans'; font-size:0.75rem; transition:all 0.2s; display:flex; align-items:center; gap:6px;">
+        <button onclick="setAdminTheme('night')" id="theme-night-btn" class="theme-btn">
           <i class="fa-solid fa-moon"></i> Night
         </button>
       </div>
 
       <button class="btn-logout" id="tab-orders" onclick="switchTab('orders')" style="background:#e05c2a;color:#fff;border-color:#e05c2a;">Pesanan</button>
+      <button class="btn-logout" id="tab-reports" onclick="switchTab('reports')">Laporan</button>
       <button class="btn-logout" id="tab-settings" onclick="switchTab('settings')">Pengaturan</button>
       <button class="btn-logout" onclick="logout()">Keluar</button>
     </div>
   </div>
-  <div class="admin-body" id="panel-orders">
+  <div class="admin-body active-tab" id="panel-orders">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem; border-bottom:1px solid var(--topbar-border); padding-bottom:1rem;">
       <h2 style="font-family:'Plus Jakarta Sans'; margin:0;">Daftar Pesanan Masuk</h2>
       
@@ -448,6 +133,151 @@
     </div>
   </div>
 
+  <div class="admin-body" id="panel-reports" style="display:none;">
+    <div style="max-width:1100px; margin:0 auto; width:100%;">
+      <div class="table-header" style="margin-bottom:1.5rem; display:flex; flex-direction:column; gap:0.3rem;">
+        <h2 style="display:flex; align-items:center; gap:10px; margin:0;"><i class="fa-solid fa-chart-line" style="color:#2a6ee0;"></i> Laporan Keuangan</h2>
+        <p id="rep-period-label" style="font-size:0.85rem; color:var(--text-muted); margin:0; font-weight:500;"></p>
+      </div>
+
+      <!-- Date Filter & Export Row -->
+      <div style="background:var(--card-bg); border:1px solid var(--card-border); padding:1.25rem; border-radius:16px; margin-bottom:2rem; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; transition: all 0.3s;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Dari:</label>
+          <input type="date" id="rep-start-date" class="settings-input" style="width:160px; padding:0.6rem 0.8rem; font-size:0.85rem;">
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Sampai:</label>
+          <input type="date" id="rep-end-date" class="settings-input" style="width:160px; padding:0.6rem 0.8rem; font-size:0.85rem;">
+        </div>
+        <button onclick="generateReport()" class="btn-save-settings" style="width:auto; padding:0.65rem 1.25rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px;"><i class="fa-solid fa-filter"></i> Filter</button>
+        <button onclick="exportReportToExcel()" class="btn-save-settings" style="width:auto; padding:0.65rem 1.25rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg, #1a9e5c, #11693d); box-shadow: 0 4px 15px rgba(26, 158, 92, 0.3);"><i class="fa-solid fa-file-excel"></i> Ekspor Excel</button>
+      </div>
+
+      <!-- Financial Statistics Cards Grid -->
+      <div class="report-stats-grid">
+        <!-- Total Revenue Card -->
+        <div class="report-stat-card revenue">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-money-bill-wave"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Total Pendapatan</div>
+            <div id="rep-stat-revenue" class="report-stat-value">Rp 0</div>
+          </div>
+        </div>
+
+        <!-- Pendapatan Offset Card -->
+        <div class="report-stat-card offset">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Pendapatan Offset</div>
+            <div id="rep-stat-revenue-offset" class="report-stat-value">Rp 0</div>
+          </div>
+        </div>
+
+        <!-- Pendapatan Pound Card -->
+        <div class="report-stat-card pound">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Pendapatan Pound</div>
+            <div id="rep-stat-revenue-pound" class="report-stat-value">Rp 0</div>
+          </div>
+        </div>
+
+        <!-- Total Orders Card -->
+        <div class="report-stat-card pound">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-cart-flatbed"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Total Pesanan</div>
+            <div id="rep-stat-total" class="report-stat-value">0</div>
+          </div>
+        </div>
+
+        <!-- Offset Orders Card -->
+        <div class="report-stat-card offset">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-print"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Pesanan Offset</div>
+            <div id="rep-stat-offset" class="report-stat-value">0</div>
+          </div>
+        </div>
+
+        <!-- Pound Orders Card -->
+        <div class="report-stat-card pound">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-scissors"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Pesanan Pound</div>
+            <div id="rep-stat-pound" class="report-stat-value">0</div>
+          </div>
+        </div>
+
+        <!-- Completed Orders Card -->
+        <div class="report-stat-card revenue">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Selesai</div>
+            <div id="rep-stat-completed" class="report-stat-value">0</div>
+          </div>
+        </div>
+
+        <!-- In-Progress Orders Card -->
+        <div class="report-stat-card processing">
+          <div class="report-stat-icon-wrapper">
+            <i class="fa-solid fa-spinner"></i>
+          </div>
+          <div class="report-stat-info">
+            <div class="report-stat-label">Diproses</div>
+            <div id="rep-stat-processing" class="report-stat-value">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart & Detail Section -->
+      <div class="settings-grid" style="grid-template-columns: 1.2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Chart Card -->
+        <div class="settings-card" style="padding: 1.5rem;">
+          <h3 style="font-size: 1rem; margin-bottom: 1rem;"><i class="fa-solid fa-chart-area"></i> Grafik Pendapatan</h3>
+          <div style="position: relative; height: 300px; width: 100%;">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Orders Breakdown Card -->
+        <div class="settings-card" style="padding: 1.5rem; display: flex; flex-direction: column;">
+          <h3 style="font-size: 1rem; margin-bottom: 1rem;"><i class="fa-solid fa-list-check"></i> Rincian Aktivitas</h3>
+          <div style="overflow-y: auto; max-height: 300px; flex: 1;">
+            <table class="orders-table" style="font-size:0.8rem;">
+              <thead>
+                <tr>
+                  <th style="padding: 0.5rem;">Tanggal</th>
+                  <th style="padding: 0.5rem;">Pelanggan</th>
+                  <th style="padding: 0.5rem;">Layanan</th>
+                  <th style="padding: 0.5rem; text-align: right;">Total</th>
+                </tr>
+              </thead>
+              <tbody id="rep-breakdown-body">
+                <tr><td colspan="4" style="text-align:center; padding: 2rem; color:var(--text-muted);">Silakan klik filter untuk memuat data.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="admin-body" id="panel-settings" style="display:none;">
     <div style="max-width:1100px; margin:0 auto; width:100%;">
       <div class="table-header" style="margin-bottom:1.5rem;">
@@ -521,938 +351,7 @@
   </div>
 </div>
 
-<script>
-  let loggedInUser = '';
-
-  // ── THEME CONFIGURATION ──
-  function setAdminTheme(theme) {
-    const body = document.body;
-    const btnLight = document.getElementById('theme-light-btn');
-    const btnNight = document.getElementById('theme-night-btn');
-    
-    if (theme === 'light') {
-      body.classList.add('light-theme');
-      if (btnLight) {
-        btnLight.style.background = '#2a6ee0';
-        btnLight.style.color = '#fff';
-      }
-      if (btnNight) {
-        btnNight.style.background = 'transparent';
-        btnNight.style.color = 'var(--btn-color)';
-      }
-    } else {
-      body.classList.remove('light-theme');
-      if (btnNight) {
-        btnNight.style.background = '#2a6ee0';
-        btnNight.style.color = '#fff';
-      }
-      if (btnLight) {
-        btnLight.style.background = 'transparent';
-        btnLight.style.color = 'var(--btn-color)';
-      }
-    }
-    localStorage.setItem('admin-theme', theme);
-    
-    // Sync filter buttons styles and tabs if visible
-    if (document.getElementById('screen-admin').classList.contains('active')) {
-      const currentTab = document.getElementById('panel-orders').style.display !== 'none' ? 'orders' : 'settings';
-      switchTab(currentTab);
-      
-      if (typeof currentFilterType !== 'undefined') {
-        const activeFilterBtn = document.getElementById('btn-filter-' + currentFilterType);
-        if (activeFilterBtn) {
-          activeFilterBtn.style.background = '#2a6ee0';
-          activeFilterBtn.style.color = '#fff';
-        }
-      }
-    }
-  }
-
-  // Interceptor global fetch untuk menangani 401 Unauthorized (sesi habis)
-  const originalFetch = window.fetch;
-  window.fetch = async function(...args) {
-    try {
-      const response = await originalFetch(...args);
-      if (response.status === 401) {
-        handleUnauthorized();
-      }
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  function handleUnauthorized() {
-    sessionStorage.removeItem('adminLoggedIn');
-    sessionStorage.removeItem('adminUser');
-    loggedInUser = '';
-    
-    document.getElementById('screen-admin').classList.remove('active');
-    document.getElementById('screen-admin-login').classList.add('active');
-    document.getElementById('admin-pass').value = '';
-    
-    if (!window.isUnauthorizedAlertActive) {
-      window.isUnauthorizedAlertActive = true;
-      Swal.fire({
-        icon: 'error',
-        title: 'Sesi Berakhir',
-        text: 'Sesi Anda telah berakhir atau Anda belum login. Silakan login kembali.',
-        confirmButtonColor: '#2a6ee0'
-      }).then(() => {
-        window.isUnauthorizedAlertActive = false;
-      });
-    }
-  }
-
-  // Initialize theme immediately to prevent flashing
-  (function initTheme() {
-    const savedTheme = localStorage.getItem('admin-theme') || 'night';
-    if (savedTheme === 'light') {
-      document.body.classList.add('light-theme');
-    }
-  })();
-
-  // Cek sesi login saat halaman dimuat
-  window.addEventListener('DOMContentLoaded', async () => {
-    const savedTheme = localStorage.getItem('admin-theme') || 'night';
-    setAdminTheme(savedTheme);
-    startOrderPolling(); // Mulai polling pesanan baru (D1)
-
-    try {
-      const res = await fetch('api/auth.php?action=check_session');
-      const json = await res.json();
-      if (json.success) {
-        loggedInUser = json.username;
-        sessionStorage.setItem('adminLoggedIn', 'true');
-        sessionStorage.setItem('adminUser', json.username);
-        
-        document.getElementById('screen-admin-login').classList.remove('active');
-        document.getElementById('screen-admin').classList.add('active');
-        loadOrders();
-      } else {
-        sessionStorage.removeItem('adminLoggedIn');
-        sessionStorage.removeItem('adminUser');
-        document.getElementById('screen-admin').classList.remove('active');
-        document.getElementById('screen-admin-login').classList.add('active');
-      }
-    } catch (e) {
-      console.error('Gagal memeriksa sesi:', e);
-    }
-  });
-
-  function togglePassword(inputId, iconElement) {
-    const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-      input.type = 'text';
-      iconElement.classList.remove('fa-eye');
-      iconElement.classList.add('fa-eye-slash');
-    } else {
-      input.type = 'password';
-      iconElement.classList.remove('fa-eye-slash');
-      iconElement.classList.add('fa-eye');
-    }
-  }
-
-  function formatRp(n) { return 'Rp ' + Number(n).toLocaleString('id-ID'); }
-  
-  async function adminLogin() {
-    const user = document.getElementById('admin-user').value;
-    const pass = document.getElementById('admin-pass').value;
-    
-    if (!user || !pass) {
-      document.getElementById('login-err').innerText = 'Username dan password harus diisi!';
-      document.getElementById('login-err').style.display = 'block';
-      return;
-    }
-
-    try {
-      const res = await fetch('api/auth.php?action=login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user, password: pass })
-      });
-      const json = await res.json();
-      
-      if (json.success) {
-        loggedInUser = user;
-        sessionStorage.setItem('adminLoggedIn', 'true');
-        sessionStorage.setItem('adminUser', user);
-        
-        document.getElementById('screen-admin-login').classList.remove('active');
-        document.getElementById('screen-admin').classList.add('active');
-        loadOrders();
-      } else {
-        if (json.cooldown) {
-          startCooldownTimer(json.cooldown);
-        } else {
-          document.getElementById('login-err').innerText = json.message || 'Username atau password salah!';
-          document.getElementById('login-err').style.display = 'block';
-        }
-      }
-    } catch(e) {
-      console.error(e);
-      document.getElementById('login-err').innerText = 'Terjadi kesalahan sistem.';
-      document.getElementById('login-err').style.display = 'block';
-    }
-  }
-
-  let cooldownInterval = null;
-  function startCooldownTimer(seconds) {
-    const errEl = document.getElementById('login-err');
-    errEl.style.display = 'block';
-    
-    if (cooldownInterval) clearInterval(cooldownInterval);
-    
-    let remaining = seconds;
-    const updateMsg = () => {
-      if (remaining >= 60) {
-        const mins = Math.ceil(remaining / 60);
-        errEl.innerText = `Terlalu banyak percobaan login. Silakan tunggu ${mins} menit lagi.`;
-      } else {
-        errEl.innerText = `Terlalu banyak percobaan login. Silakan tunggu ${remaining} detik lagi.`;
-      }
-    };
-    
-    updateMsg();
-    
-    cooldownInterval = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(cooldownInterval);
-        errEl.style.display = 'none';
-        errEl.innerText = '';
-      } else {
-        updateMsg();
-      }
-    }, 1000);
-  }
-  
-  function logout() {
-    Swal.fire({
-      title: 'Keluar Sesi?',
-      text: 'Apakah Anda yakin ingin keluar dari panel admin?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#e05c2a',
-      cancelButtonColor: '#6e7881',
-      confirmButtonText: 'Ya, Keluar!',
-      cancelButtonText: 'Batal'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await fetch('api/auth.php?action=logout');
-        } catch (e) {
-          console.error('Logout error:', e);
-        }
-        
-        sessionStorage.removeItem('adminLoggedIn');
-        sessionStorage.removeItem('adminUser');
-        loggedInUser = '';
-        
-        document.getElementById('screen-admin').classList.remove('active');
-        document.getElementById('screen-admin-login').classList.add('active');
-        document.getElementById('admin-pass').value = '';
-        document.getElementById('login-err').style.display = 'none';
-      }
-    });
-  }
-
-  // Global state for admin table
-  let allOrders = [];
-  let filteredOrders = [];
-  let currentFilterType = 'all';
-  let searchQuery = '';
-  let currentPage = 1;
-  const pageSize = 10;
-
-  // Variabel untuk polling pesanan baru (D1)
-  let lastMaxOrderId = 0;
-
-  async function startOrderPolling() {
-    setInterval(async () => {
-      // Hanya lakukan polling jika admin sedang berada di tab "orders" dan sedang masuk dashboard
-      if (document.getElementById('screen-admin').classList.contains('active') && 
-          document.getElementById('panel-orders').style.display !== 'none') {
-        try {
-          const res = await fetch('api/get_pesanan.php');
-          const json = await res.json();
-          if (json.success && json.data && json.data.length > 0) {
-            const sorted = json.data.sort((a, b) => Number(b.id) - Number(a.id));
-            const currentMaxId = Number(sorted[0].id);
-            
-            if (lastMaxOrderId > 0 && currentMaxId > lastMaxOrderId) {
-              playNotificationSound();
-              Swal.fire({
-                icon: 'info',
-                title: 'Pesanan Baru Masuk!',
-                text: `Terdapat pesanan baru dengan nomor antrian #${currentMaxId}.`,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 4000,
-                timerProgressBar: true
-              });
-              allOrders = sorted;
-              applyFiltersAndRender();
-            }
-            lastMaxOrderId = currentMaxId;
-          }
-        } catch (e) {
-          console.error("Gagal melakukan polling pesanan:", e);
-        }
-      }
-    }, 30000); // Polling setiap 30 detik
-  }
-
-  function playNotificationSound() {
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12); // A5
-      
-      gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + 0.45);
-    } catch (e) {
-      console.warn('Gagal memutar notifikasi suara:', e);
-    }
-  }
-
-  async function loadOrders() {
-    const tbody = document.getElementById('orders-body');
-    if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:3rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem; margin-bottom:0.5rem; display:block; color:var(--accent);"></i>Memuat data pesanan...</td></tr>`;
-    }
-    try {
-      const res = await fetch('api/get_pesanan.php');
-      const json = await res.json();
-      
-      if (!json.success) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Gagal memuat: ${json.message}</td></tr>`;
-        return;
-      }
-
-      // Sort strictly by ID descending
-      allOrders = json.data.sort((a, b) => Number(b.id) - Number(a.id));
-      if (allOrders.length > 0) {
-        lastMaxOrderId = Number(allOrders[0].id);
-      }
-      applyFiltersAndRender();
-      
-    } catch(e) {
-      console.error(e);
-      document.getElementById('orders-body').innerHTML = `<tr><td colspan="8" style="text-align:center; color:#ff6b6b;">Terjadi kesalahan saat memuat data.</td></tr>`;
-    }
-  }
-
-  function applyFiltersAndRender() {
-    // 1. Filter by service type
-    filteredOrders = allOrders;
-    if (currentFilterType === 'offset') {
-      filteredOrders = allOrders.filter(o => o.layanan.includes('Offset'));
-    } else if (currentFilterType === 'pound') {
-      filteredOrders = allOrders.filter(o => !o.layanan.includes('Offset'));
-    }
-    
-    // 2. Filter by search query
-    if (searchQuery.trim() !== '') {
-      const q = searchQuery.toLowerCase().trim();
-      filteredOrders = filteredOrders.filter(o => {
-        return o.nama.toLowerCase().includes(q) || String(o.id).includes(q);
-      });
-    }
-
-    // Calculate Stats based on allOrders (overall database status)
-    const totalOrders = allOrders.length;
-    const totalIncome = allOrders
-      .filter(o => o.status === 'selesai')
-      .reduce((sum, o) => sum + Number(o.harga), 0);
-    const todayStr = new Date().toDateString();
-    const ordersToday = allOrders.filter(o => {
-      return new Date(o.created_at).toDateString() === todayStr;
-    }).length;
-
-    document.getElementById('stat-total-orders').textContent = totalOrders;
-    document.getElementById('stat-total-income').textContent = formatRp(totalIncome);
-    document.getElementById('stat-orders-today').textContent = ordersToday;
-
-    // 3. Paginate
-    const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
-    if (currentPage < 1) currentPage = 1;
-
-    document.getElementById('page-indicator').textContent = `Hal ${currentPage} dari ${totalPages}`;
-
-    const startIndex = (currentPage - 1) * pageSize;
-    const paginatedData = filteredOrders.slice(startIndex, startIndex + pageSize);
-
-    const tbody = document.getElementById('orders-body');
-    if (paginatedData.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="8" style="text-align:center; padding:4rem; color:var(--text-muted);">
-            <i class="fa-solid fa-folder-open" style="font-size:2.5rem; margin-bottom:0.8rem; display:block; opacity:0.4; color:var(--accent2);"></i>
-            <strong>Tidak ada pesanan ditemukan</strong><br>
-            <span style="font-size:0.8rem; opacity:0.8;">Coba cari dengan kata kunci lain atau filter berbeda</span>
-          </td>
-        </tr>`;
-      return;
-    }
-
-    tbody.innerHTML = paginatedData.map(o => renderOrderRow(o)).join('');
-  }
-
-  function handleAdminSearch(val) {
-    searchQuery = val;
-    currentPage = 1;
-    applyFiltersAndRender();
-  }
-
-  function changePage(dir) {
-    const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
-    currentPage = Math.max(1, Math.min(totalPages, currentPage + dir));
-    applyFiltersAndRender();
-  }
-
-  function getFileIconAndClass(filename) {
-    const ext = filename.split('.').pop().toLowerCase();
-    let icon = 'fa-file';
-    let cls = 'other';
-    
-    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext)) {
-      icon = 'fa-file-image';
-      cls = 'image';
-    } else if (ext === 'pdf') {
-      icon = 'fa-file-pdf';
-      cls = 'pdf';
-    } else if (['doc', 'docx'].includes(ext)) {
-      icon = 'fa-file-word';
-      cls = 'word';
-    } else if (['xls', 'xlsx', 'csv'].includes(ext)) {
-      icon = 'fa-file-excel';
-      cls = 'excel';
-    }
-    return { icon, cls };
-  }
-
-  function renderOrderRow(o) {
-    const isOffset = o.layanan.includes('Offset');
-    const badgeClass = isOffset ? 'offset' : 'pound';
-    
-    let detailHtml = `<span class="badge ${badgeClass}">${o.layanan}</span><br><br>`;
-    detailHtml += `<strong>Jml:</strong> ${Number(o.jumlah).toLocaleString('id-ID')} lbr<br>`;
-    if(isOffset) {
-      detailHtml += `<strong>Warna:</strong> ${o.warna || '-'}<br>`;
-      detailHtml += `<strong>Kertas:</strong> ${o.kertas || '-'}<br>`;
-      detailHtml += `<strong>Ukuran:</strong> ${o.ukuran || '-'}<br>`;
-    }
-    detailHtml += `<br><strong>Catatan:</strong> ${o.catatan || '-'}`;
-    
-    let filesHtml = '<span style="color:var(--text-muted-dark); font-style:italic; font-size:0.8rem;">Tidak ada file</span>';
-    if (o.files && o.files.length > 0) {
-      filesHtml = `<div class="file-badge-container">` + 
-        o.files.map(f => {
-          const info = getFileIconAndClass(f.name);
-          return `
-            <div class="file-card" style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:0.6rem; display:flex; flex-direction:column; gap:0.5rem; transition:all 0.2s;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <i class="fa-solid ${info.icon} file-icon ${info.cls}"></i>
-                <span class="file-name-text" style="font-size:0.75rem; font-weight:700; color:var(--text);" title="${f.name}">${f.name}</span>
-              </div>
-              <div style="display:flex; gap:0.4rem; margin-top:0.2rem;">
-                <button onclick="previewDesignFile('${f.path}', '${f.name}')" style="flex:1; padding:0.35rem 0.5rem; background:#2a6ee0; color:#fff; border:none; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px; transition:all 0.2s;"><i class="fa-solid fa-eye"></i> Preview</button>
-                <a href="${f.path}" download="${f.name}" style="flex:1; padding:0.35rem 0.5rem; background:#1a9e5c; color:#fff; border:none; border-radius:6px; font-size:0.7rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:4px; text-decoration:none; transition:all 0.2s;"><i class="fa-solid fa-download"></i> Download</a>
-              </div>
-            </div>
-          `;
-        }).join('') + `</div>`;
-    }
-
-    let buktiHtml = '';
-    if (o.bukti_bayar) {
-      buktiHtml = `<br><br><a class="file-link" href="javascript:void(0)" onclick="showBuktiModal('${o.bukti_bayar}')" style="color:#1a9e5c; font-weight:700; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-file-invoice-dollar"></i> Bukti Transfer</a>`;
-    } else if (o.bayar === 'QRIS') {
-      buktiHtml = `<br><br><span style="color:var(--text-muted-dark); font-size:0.75rem;">(Belum upload bukti)</span>`;
-    }
-
-    const waNotifyBtn = `
-      <button onclick="sendWaNotification(${o.id}, '${o.nama}', '${o.wa}', '${o.status}')" title="Kirim Notifikasi WA" style="margin-left:0.4rem; padding:0.5rem 0.65rem; background:#1a9e5c; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center;">
-        <i class="fa-brands fa-whatsapp"></i>
-      </button>
-    `;
-
-    const deleteBtn = `
-      <button onclick="deleteOrder(${o.id})" title="Hapus Pesanan" style="margin-left:0.4rem; padding:0.5rem 0.65rem; background:#ff6b6b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center;">
-        <i class="fa-solid fa-trash-can"></i>
-      </button>
-    `;
-
-    // Status selector dropdown
-    const statusSelect = `
-      <div style="display:flex; align-items:center;">
-        <select class="status-select" onchange="updateOrderStatus(${o.id}, this.value)">
-          <option value="menunggu" ${o.status === 'menunggu' ? 'selected' : ''}>Menunggu</option>
-          <option value="diproses" ${o.status === 'diproses' ? 'selected' : ''}>Diproses</option>
-          <option value="selesai" ${o.status === 'selesai' ? 'selected' : ''}>Selesai</option>
-        </select>
-        ${waNotifyBtn}
-        ${deleteBtn}
-      </div>
-    `;
-    
-    return `
-      <tr data-layanan="${isOffset ? 'offset' : 'pound'}">
-        <td style="font-weight:bold; color:#e05c2a;">#${o.id}</td>
-        <td>${new Date(o.created_at).toLocaleString('id-ID')}</td>
-        <td>
-          <strong>${o.nama}</strong><br>
-          <span style="color:var(--text-muted); font-size:0.85rem;">WA: ${o.wa}</span>
-        </td>
-        <td>${detailHtml}</td>
-        <td>
-          <strong>${o.pengiriman}</strong><br>
-          <span style="font-size:.8rem; color:var(--text-muted);">${o.alamat || '-'}</span>
-        </td>
-        <td>
-          <strong>${o.bayar}</strong><br>
-          <span style="color:#1a9e5c; font-weight:bold;">${formatRp(o.harga)}</span><br>
-          <span class="badge-status ${o.status}" style="margin-top:0.25rem;">${o.status.toUpperCase()}</span>
-          ${buktiHtml}
-        </td>
-        <td>${filesHtml}</td>
-        <td>${statusSelect}</td>
-      </tr>
-    `;
-  }
-
-  async function updateOrderStatus(id, status) {
-    try {
-      const res = await fetch('api/update_status.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
-      });
-      const json = await res.json();
-      if (json.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Berhasil',
-          text: 'Status pesanan berhasil diperbarui!',
-          timer: 1500,
-          showConfirmButton: false
-        });
-        loadOrders();
-      } else {
-        Swal.fire('Gagal', json.message, 'error');
-      }
-    } catch (e) {
-      Swal.fire('Error', 'Gagal memperbarui status.', 'error');
-    }
-  }
-
-  function sendWaNotification(id, nama, wa, status) {
-    let text = '';
-    const antrianText = '#' + String(id).padStart(3, '0');
-    
-    if (status === 'menunggu') {
-      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* telah kami terima dan masuk daftar antrian. Mohon tunggu proses selanjutnya ya!`;
-    } else if (status === 'diproses') {
-      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* saat ini *sedang diproses* oleh operator kami.`;
-    } else if (status === 'selesai') {
-      text = `Halo ${nama}, pesanan Anda dengan nomor antrian *${antrianText}* telah *selesai dikerjakan* dan siap diambil/dikirim. Terima kasih!`;
-    }
-    
-    let cleanWa = wa.replace(/[^0-9]/g, '');
-    if (cleanWa.startsWith('0')) {
-      cleanWa = '62' + cleanWa.substring(1);
-    }
-    
-    const url = `https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
-  }
-
-  function deleteOrder(id) {
-    Swal.fire({
-      title: 'Hapus Pesanan?',
-      text: `Pesanan #${id} beserta seluruh berkas desain dan bukti bayarnya akan dihapus secara permanen!`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#e05c2a',
-      cancelButtonColor: '#6e7881',
-      confirmButtonText: 'Ya, Hapus!',
-      cancelButtonText: 'Batal'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch('api/hapus_pesanan.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-          });
-          const json = await res.json();
-          if (json.success) {
-            Swal.fire({
-              title: 'Terhapus!',
-              text: 'Pesanan berhasil dihapus.',
-              icon: 'success',
-              timer: 1500,
-              showConfirmButton: false
-            });
-            loadOrders();
-          } else {
-            Swal.fire('Gagal', json.message, 'error');
-          }
-        } catch (e) {
-          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
-        }
-      }
-    });
-  }
-
-  function filterAdminOrders(type) {
-    currentFilterType = type;
-    currentPage = 1;
-    
-    const btnAll = document.getElementById('btn-filter-all');
-    const btnOffset = document.getElementById('btn-filter-offset');
-    const btnPound = document.getElementById('btn-filter-pound');
-    
-    // Reset button styles
-    [btnAll, btnOffset, btnPound].forEach(btn => {
-      btn.style.background = 'transparent';
-      btn.style.color = 'var(--btn-color)';
-    });
-    
-    const activeBtn = document.getElementById('btn-filter-' + type);
-    if (activeBtn) {
-      activeBtn.style.background = '#2a6ee0';
-      activeBtn.style.color = '#fff';
-    }
-
-    applyFiltersAndRender();
-  }
-
-  function switchTab(tab) {
-    if(tab === 'orders') {
-      document.getElementById('panel-orders').style.display = 'block';
-      document.getElementById('panel-settings').style.display = 'none';
-      document.getElementById('tab-orders').style.background = '#e05c2a';
-      document.getElementById('tab-orders').style.color = '#fff';
-      document.getElementById('tab-orders').style.borderColor = '#e05c2a';
-      document.getElementById('tab-settings').style.background = 'transparent';
-      document.getElementById('tab-settings').style.color = 'var(--btn-color)';
-      document.getElementById('tab-settings').style.borderColor = 'var(--btn-border)';
-    } else {
-      document.getElementById('panel-orders').style.display = 'none';
-      document.getElementById('panel-settings').style.display = 'block';
-      document.getElementById('tab-settings').style.background = '#e05c2a';
-      document.getElementById('tab-settings').style.color = '#fff';
-      document.getElementById('tab-settings').style.borderColor = '#e05c2a';
-      document.getElementById('tab-orders').style.background = 'transparent';
-      document.getElementById('tab-orders').style.color = 'var(--btn-color)';
-      document.getElementById('tab-orders').style.borderColor = 'var(--btn-border)';
-      loadSettings();
-    }
-  }
-
-  function handleQRISImage(input) {
-    const file = input.files[0];
-    if (!file) return;
-
-    document.getElementById('lbl-qris-file').textContent = file.name;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-        document.getElementById('qris-preview-box').style.display = 'block';
-        document.querySelector('.qris-dropzone').style.display = 'none';
-        document.getElementById('img-qris-preview').src = e.target.result;
-
-        const statusEl = document.getElementById('qris-status-msg');
-        if (code) {
-          document.getElementById('inp-qris-string').value = code.data;
-          statusEl.innerHTML = '<span style="color:#1a9e5c;"><i class="fa-solid fa-circle-check"></i> QR Code berhasil dibaca! String QRIS terdeteksi.</span>';
-        } else {
-          document.getElementById('inp-qris-string').value = '';
-          statusEl.innerHTML = '<span style="color:#ffc107;"><i class="fa-solid fa-triangle-exclamation"></i> Gagal mendecode QR Code dari gambar. QRIS akan tampil sebagai gambar statis tanpa nominal otomatis.</span>';
-        }
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  async function loadSettings() {
-    try {
-      const res = await fetch('api/settings.php');
-      const json = await res.json();
-      if(json.success && json.data) {
-        document.getElementById('inp-wa-number').value = json.data.wa_number || '';
-        document.getElementById('inp-qris-string').value = json.data.qris_string || '';
-
-        if(json.data.qris_image) {
-          document.getElementById('qris-preview-box').style.display = 'block';
-          document.querySelector('.qris-dropzone').style.display = 'none';
-          document.getElementById('img-qris-preview').src = json.data.qris_image + '?t=' + Date.now();
-          document.getElementById('lbl-qris-file').textContent = 'Gambar saat ini aktif';
-          if(json.data.qris_string) {
-            document.getElementById('qris-status-msg').innerHTML = '<span style="color:#1a9e5c;"><i class="fa-solid fa-circle-check"></i> QRIS Dinamis Aktif (String terdeteksi)</span>';
-          } else {
-            document.getElementById('qris-status-msg').innerHTML = '<span style="color:#ffc107;"><i class="fa-solid fa-triangle-exclamation"></i> Gambar aktif tetapi QRIS gagal didecode. Nominal dinamis tidak aktif.</span>';
-          }
-        } else {
-          document.getElementById('qris-preview-box').style.display = 'none';
-          document.querySelector('.qris-dropzone').style.display = 'flex';
-        }
-      }
-    } catch(e) { console.error('Gagal memuat pengaturan', e); }
-  }
-
-  async function saveSettings() {
-    const wa = document.getElementById('inp-wa-number').value.trim();
-    const qrisString = document.getElementById('inp-qris-string').value.trim();
-    const qrisFileInput = document.getElementById('inp-qris-image');
-
-    if(!wa) return alert('Nomor WA tidak boleh kosong!');
-
-    const fd = new FormData();
-    fd.append('wa_number', wa);
-    fd.append('qris_string', qrisString);
-    if (qrisFileInput.files.length > 0) {
-      fd.append('qris_image', qrisFileInput.files[0]);
-    }
-
-    try {
-      const res = await fetch('api/settings.php', {
-        method: 'POST',
-        body: fd
-      });
-      const json = await res.json();
-      if(json.success) {
-        Swal.fire('Berhasil', json.message, 'success');
-        loadSettings();
-      } else {
-        Swal.fire('Gagal', 'Gagal menyimpan: ' + json.message, 'error');
-      }
-    } catch(e) {
-      Swal.fire('Error', 'Terjadi kesalahan saat menyimpan pengaturan.', 'error');
-    }
-  }
-
-  async function changePassword() {
-    const oldPass = document.getElementById('inp-old-pass').value;
-    const newPass = document.getElementById('inp-new-pass').value;
-    const confirmPass = document.getElementById('inp-confirm-pass').value;
-    
-    if(!oldPass || !newPass || !confirmPass) {
-      return Swal.fire('Peringatan', 'Semua field password harus diisi!', 'warning');
-    }
-
-    if(newPass !== confirmPass) {
-      return Swal.fire('Peringatan', 'Konfirmasi password baru tidak cocok!', 'warning');
-    }
-
-    try {
-      const res = await fetch('api/auth.php?action=change_password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: loggedInUser, old_password: oldPass, new_password: newPass })
-      });
-      const json = await res.json();
-      
-      if(json.success) {
-        Swal.fire('Berhasil', json.message, 'success');
-        document.getElementById('inp-old-pass').value = '';
-        document.getElementById('inp-new-pass').value = '';
-        document.getElementById('inp-confirm-pass').value = '';
-      } else {
-        Swal.fire('Gagal', json.message, 'error');
-      }
-    } catch(e) {
-      Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
-    }
-  }
-
-  async function previewDesignFile(path, name) {
-    const modal = document.getElementById('preview-modal');
-    const titleEl = document.getElementById('preview-modal-title');
-    const bodyEl = document.getElementById('preview-modal-body');
-    
-    titleEl.textContent = name;
-    bodyEl.innerHTML = '<div style="font-size:0.9rem; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Memuat pratinjau...</div>';
-    modal.classList.add('show');
-    
-    const ext = name.split('.').pop().toLowerCase();
-    const isImg = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(ext);
-    const isPdf = ext === 'pdf';
-    const isCsv = ext === 'csv';
-    const isDocx = ['doc', 'docx'].includes(ext);
-    const isXlsx = ['xls', 'xlsx'].includes(ext);
-    
-    try {
-      if (isImg) {
-        bodyEl.innerHTML = `<img src="${path}" alt="${name}" style="max-width:100%; max-height:55vh; object-fit:contain; border-radius:8px; display:block; margin:0 auto;" />`;
-      } else if (isPdf) {
-        bodyEl.innerHTML = `<iframe src="${path}" style="width:100%; height:55vh; border:none; border-radius:8px;"></iframe>`;
-      } else if (isCsv) {
-        const res = await fetch(path);
-        const text = await res.text();
-        
-        const rows = text.split(/\r?\n/).filter(line => line.trim() !== '');
-        if (rows.length === 0) {
-          bodyEl.innerHTML = '<div style="color:var(--text-muted); padding: 2rem; text-align:center;">Berkas CSV ini kosong.</div>';
-          return;
-        }
-        let html = '<div style="width:100%; max-height:55vh; overflow:auto; border:1px solid var(--card-border); border-radius:8px; background:var(--modal-bg);"><table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.82rem;">';
-        
-        rows.slice(0, 100).forEach((rowText, rIdx) => {
-          let cols = rowText.includes(';') ? rowText.split(';') : rowText.split(',');
-          html += `<tr style="${rIdx === 0 ? 'position:sticky; top:0; z-index:1;' : ''}">`;
-          cols.forEach(col => {
-            const tag = rIdx === 0 ? 'th' : 'td';
-            const cleanText = col.trim().replace(/^["']|["']$/g, '');
-            const cellStyle = rIdx === 0
-              ? 'background:var(--input-bg); color:var(--text); font-weight:800; padding:0.6rem 0.8rem; border-bottom:2px solid var(--card-border); border-right:1px solid var(--card-border);'
-              : 'padding:0.5rem 0.8rem; border-bottom:1px solid var(--row-border); border-right:1px solid var(--row-border); color:var(--text);';
-            html += `<${tag} style="${cellStyle}">${cleanText}</${tag}>`;
-          });
-          html += '</tr>';
-        });
-        
-        html += '</table></div>';
-        if (rows.length > 100) {
-          html += `<div style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:0.6rem; font-weight:600;"><i class="fa-solid fa-circle-info"></i> Menampilkan 100 baris pertama dari total ${rows.length} baris.</div>`;
-        }
-        bodyEl.innerHTML = html;
-      } else if (isDocx) {
-        const res = await fetch(path);
-        const buf = await res.arrayBuffer();
-        
-        bodyEl.innerHTML = '';
-        const wrapper = document.createElement('div');
-        wrapper.style.cssText = 'width:100%; height:55vh; overflow:auto; background:#fff; border-radius:8px; border:1px solid var(--card-border); padding:1rem; box-sizing:border-box; color:#000;';
-        bodyEl.appendChild(wrapper);
-        
-        await docx.renderAsync(buf, wrapper, null, {
-          className: 'docx-render', inWrapper: true, ignoreWidth: false,
-          breakPages: true, renderHeaders: true, renderFooters: true
-        });
-      } else if (isXlsx) {
-        const res = await fetch(path);
-        const buf = await res.arrayBuffer();
-        
-        const wb = XLSX.read(buf, { type: 'array' });
-        const names = wb.SheetNames;
-
-        const buildSheet = (idx) => {
-          const data = XLSX.utils.sheet_to_json(wb.Sheets[names[idx]], { header: 1, defval: '' });
-          let t = '<div style="overflow:auto; max-height:calc(55vh - 56px); border:1px solid var(--card-border); border-radius:8px;"><table style="width:100%; border-collapse:collapse; font-size:0.8rem; background:var(--modal-bg);">';
-          data.slice(0, 150).forEach((row, ri) => {
-            t += '<tr>';
-            row.forEach(cell => {
-              const tag = ri === 0 ? 'th' : 'td';
-              const s = ri === 0
-                ? 'background:var(--input-bg);color:var(--text);font-weight:800;padding:0.5rem 0.75rem;border-bottom:2px solid var(--card-border);border-right:1px solid var(--card-border);white-space:nowrap;'
-                : 'padding:0.45rem 0.75rem;border-bottom:1px solid var(--row-border);border-right:1px solid var(--row-border);white-space:nowrap;color:var(--text);';
-              t += `<${tag} style="${s}">${cell ?? ''}</${tag}>`;
-            });
-            t += '</tr>';
-          });
-          t += '</table></div>';
-          if (data.length > 150) t += `<div style="font-size:0.72rem;color:var(--text-muted);text-align:center;margin-top:0.4rem;"><i class="fa-solid fa-circle-info"></i> Menampilkan 150 dari ${data.length} baris</div>`;
-          return t;
-        };
-
-        const tabs = names.length > 1
-          ? `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.6rem;">` +
-            names.map((n, i) => `<button id="xtab-${i}" onclick="window._xswitch(${i})" style="font-family:'Plus Jakarta Sans';font-size:0.75rem;font-weight:700;padding:0.35rem 0.8rem;border-radius:20px;border:1px solid var(--input-border);cursor:pointer;background:${i===0?'#2a6ee0':'var(--input-bg)'};color:${i===0?'#fff':'var(--text)'};">${n}</button>`).join('') +
-            `</div>`
-          : '';
-
-        const wrap = document.createElement('div');
-        wrap.style.cssText = 'width:100%;height:55vh;';
-        wrap.innerHTML = tabs + buildSheet(0);
-        bodyEl.innerHTML = '';
-        bodyEl.appendChild(wrap);
-
-        if (names.length > 1) {
-          window._xswitch = (idx) => {
-            names.forEach((_, btnIdx) => {
-              const btn = document.getElementById(`xtab-${btnIdx}`);
-              if (btn) {
-                if (btnIdx === idx) {
-                  btn.style.background = '#2a6ee0';
-                  btn.style.color = '#fff';
-                } else {
-                  btn.style.background = 'var(--input-bg)';
-                  btn.style.color = 'var(--text)';
-                }
-              }
-            });
-            const tableDiv = wrap.querySelector('div:last-child');
-            if (tableDiv) tableDiv.outerHTML = buildSheet(idx);
-          };
-        }
-      } else {
-        bodyEl.innerHTML = `
-          <div style="text-align:center; padding:2rem 1rem;">
-            <i class="fa-solid fa-file-lines" style="font-size:3rem; color:var(--text-muted); margin-bottom:1rem; display:block;"></i>
-            <h4 style="margin:0 0 0.5rem; color:var(--text);">${name}</h4>
-            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5; margin-bottom:1.5rem;">
-              Format file <strong>${ext.toUpperCase()}</strong> tidak mendukung pratinjau langsung di browser. Silakan unduh berkas untuk membacanya.
-            </p>
-          </div>
-        `;
-      }
-    } catch (err) {
-      bodyEl.innerHTML = `<div style="padding:2rem;color:#ff6b6b;text-align:center;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;display:block;margin-bottom:0.8rem;"></i>Gagal merender pratinjau berkas.<br><small style="color:var(--text-muted)">${err.message}</small></div>`;
-    }
-  }
-
-  function closePreviewModal() {
-    const modal = document.getElementById('preview-modal');
-    modal.classList.remove('show');
-    document.getElementById('preview-modal-body').innerHTML = '';
-  }
-
-  window.addEventListener('click', function(e) {
-    const modal = document.getElementById('preview-modal');
-    if (e.target === modal) {
-      closePreviewModal();
-    }
-  });
-
-  function showBuktiModal(filename) {
-    const modal = document.getElementById('modal-bukti');
-    const img = document.getElementById('img-modal-bukti');
-    img.src = 'uploads/' + filename;
-    modal.style.display = 'flex';
-  }
-
-  function closeBuktiModal() {
-    document.getElementById('modal-bukti').style.display = 'none';
-  }
-</script>
+<script src="assets/admin.js"></script>
 
 <!-- Modal Bukti Transfer -->
 <div id="modal-bukti" style="display:none; position:fixed; inset:0; background:var(--overlay-bg); backdrop-filter:blur(8px); z-index:1000; align-items:center; justify-content:center; padding:2rem; transition: background 0.3s;" onclick="closeBuktiModal()">
